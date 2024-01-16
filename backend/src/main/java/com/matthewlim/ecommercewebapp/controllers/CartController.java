@@ -38,7 +38,7 @@ public class CartController {
 		if ( user!= null ) {
 			return new ArrayList<Cart>(Arrays.asList(cartService.findByUser(user)));
 		} else if ( cartItem != null ) {
-			return new ArrayList<Cart>(Arrays.asList(cartService.findByCartItem(cartItem)));
+			return new ArrayList<Cart>(Arrays.asList(cartService.findByCartItems(cartItem)));
 		} else {
 			return cartService.findAllCarts();	
 		}

@@ -48,7 +48,7 @@ public class OrderController {
 		} else if ( user != null ) {
 			return orderService.findByUser(user);
 		} else if ( orderItem != null ) {
-			return new ArrayList<Order>(Arrays.asList(orderService.findByOrderItem(orderItem)));
+			return new ArrayList<Order>(Arrays.asList(orderService.findByOrderItems(orderItem)));
 		} else if ( payment != null ) {
 			return new ArrayList<Order>(Arrays.asList(orderService.findByPayment(payment)));
 		} else {

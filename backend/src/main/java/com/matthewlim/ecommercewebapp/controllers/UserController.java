@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
+import com.matthewlim.ecommercewebapp.models.Address;
+import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.UserService;
 
@@ -32,11 +34,15 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping
-	public List<User> getUsers(@RequestParam(required = false) String username, @RequestParam(required = false) String email) {
+	public List<User> getUsers(@RequestParam(required = false) String username, @RequestParam(required = false) String email, @RequestParam(required = false) Address address, @RequestParam(required = false) Order order) {
 		if ( username != null ) {
 			return new ArrayList<User>(Arrays.asList(userService.findByUsername(username)));
 		} else if ( email != null ) {
 			return new ArrayList<User>(Arrays.asList(userService.findByEmail(email)));
+		} else if ( address != null ) {
+			return new ArrayList<User>(Arrays.asList(userService.findByAddress(address)));
+		} else if ( order != null ) {
+			return new ArrayList<User>(Arrays.asList(userService.findByOrders(order)));
 		} else {
 			return userService.findAllUsers();	
 		}

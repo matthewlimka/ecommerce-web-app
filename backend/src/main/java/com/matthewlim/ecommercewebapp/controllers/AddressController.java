@@ -1,6 +1,8 @@
 package com.matthewlim.ecommercewebapp.controllers;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.matthewlim.ecommercewebapp.exceptions.AddressNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
+import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.AddressService;
 
 @RestController
@@ -30,7 +33,7 @@ public class AddressController {
 	private AddressService addressService;
 
 	@GetMapping
-	public List<Address> getAddresss(@RequestParam(required = false) String street, @RequestParam(required = false) String city, @RequestParam(required = false) String state, @RequestParam(required = false) String postalCode, @RequestParam(required = false) String country) {
+	public List<Address> getAddresss(@RequestParam(required = false) String street, @RequestParam(required = false) String city, @RequestParam(required = false) String state, @RequestParam(required = false) String postalCode, @RequestParam(required = false) String country, @RequestParam(required = false) User user) {
 		if ( street != null ) {
 			return addressService.findByStreet(street);
 		} else if ( city != null ) {
@@ -41,6 +44,8 @@ public class AddressController {
 			return addressService.findByPostalCode(postalCode);
 		} else if ( country != null ) {
 			return addressService.findByCountry(country);
+		} else if ( user != null ) {
+			return new ArrayList<Address>(Arrays.asList(addressService.findByUser(user)));
 		} else {
 			return addressService.findAllAddresses();	
 		}
