@@ -6,9 +6,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Component
 @Entity
+@Table(name = "addresses")
 public class Address {
 
 	@Id
@@ -21,17 +25,22 @@ public class Address {
 	private String postalCode;
 	private String country;
 	
+	@OneToOne
+	@JoinColumn(name = "user_id")
+	private User user;
+	
 	public Address() {
 		super();	
 	}
 	
-	public Address(String street, String city, String state, String postalCode, String country) {
+	public Address(String street, String city, String state, String postalCode, String country, User user) {
 		super();
 		this.street = street;
 		this.city = city;
 		this.state = state;
 		this.postalCode = postalCode;
 		this.country = country;
+		this.user = user;
 	}
 
 	public Long getAddressId() {
@@ -80,5 +89,13 @@ public class Address {
 
 	public void setCountry(String country) {
 		this.country = country;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

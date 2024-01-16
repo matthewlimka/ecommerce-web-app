@@ -1,17 +1,21 @@
 package com.matthewlim.ecommercewebapp.models;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Component
 @Entity
+@Table(name = "users")
 public class User {
 
 	@Id
@@ -29,10 +33,13 @@ public class User {
 	private String firstName;
 	private String lastName;
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user")
+	private List<Order> orders;
+	
+	@OneToOne(mappedBy = "user")
 	private Address address;
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "user")
 	private Cart cart;
 
 	public User() {
@@ -40,13 +47,14 @@ public class User {
 	}
 	
 	public User(String username, String password, String email, String firstName, String lastName,
-			Address address, Cart cart) {
+			List<Order> orders, Address address, Cart cart) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.orders = orders;
 		this.address = address;
 		this.cart = cart;
 	}
@@ -99,6 +107,14 @@ public class User {
 		this.lastName = lastName;
 	}
 
+	public List<Order> getOrders() {
+		return orders;
+	}
+	
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
+	}
+	
 	public Address getAddress() {
 		return address;
 	}
