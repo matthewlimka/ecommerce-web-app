@@ -46,8 +46,8 @@ public class CartService {
 		return cart;
 	}
 	
-	public Cart findByCartItem(CartItem cartItem) {
-		Cart cart = cartRepo.findByCartItem(cartItem)
+	public Cart findByCartItems(CartItem cartItem) {
+		Cart cart = cartRepo.findByCartItems(cartItem)
 				.orElseThrow(() -> {
 					logger.error("No cart with cart item ID " + cartItem.getCartItemId() + " found");
 					return new CartNotFoundException("No cart with cart item ID " + cartItem.getCartItemId() + " found");

@@ -12,6 +12,7 @@ import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.AddressNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
+import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.AddressRepository;
 
 @Service
@@ -68,6 +69,17 @@ public class AddressService {
 		return addresses;
 	}
 	
+	public Address findByUser(User user) {
+		Address address = addressRepo.findByUser(user)
+					.orElseThrow(() -> {
+						logger.error("No address with user ID " + user.getUserId() + " found");
+						return new AddressNotFoundException("No address with user ID " + user.getUserId() + " found");
+					});
+				
+		logger.info("Successfully found address with user ID " + user.getUserId());
+		return address;
+	}
+	
 	public List<Address> findAllAddresses() {
 		List<Address> addressList = addressRepo.findAll();
 		
@@ -92,6 +104,7 @@ public class AddressService {
 		existingAddress.setState(updatedAddress.getState());
 		existingAddress.setPostalCode(updatedAddress.getPostalCode());
 		existingAddress.setCountry(updatedAddress.getCountry());
+		existingAddress.setUser(updatedAddress.getUser());
 		
 		logger.info("Successfully updated address with address ID " + addressId);
 		return addressRepo.save(existingAddress);

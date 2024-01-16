@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
+import com.matthewlim.ecommercewebapp.models.Address;
+import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 
@@ -55,6 +57,28 @@ public class UserService {
 		return user;
 	}
 	
+	public User findByAddress(Address address) {
+		User user = userRepo.findByAddress(address)
+				.orElseThrow(() -> {
+					logger.error("No user with address " + address + " found");
+					return new UserNotFoundException("No user with address " + address + " found");
+				});
+		
+		logger.info("Successfully found user with address " + address);
+		return user;
+	}
+	
+	public User findByOrders(Order order) {
+		User user = userRepo.findByOrders(order)
+				.orElseThrow(() -> {
+					logger.error("No user with order " + order + " found");
+					return new UserNotFoundException("No user with order " + order + " found");
+				});
+		
+		logger.info("Successfully found user with order " + order);
+		return user;
+	}
+	
 	public List<User> findAllUsers() {
 		List<User> userList = userRepo.findAll();
 		
@@ -79,6 +103,7 @@ public class UserService {
 		existingUser.setEmail(updatedUser.getEmail());
 		existingUser.setFirstName(updatedUser.getFirstName());
 		existingUser.setLastName(updatedUser.getLastName());
+		existingUser.setOrders(updatedUser.getOrders());
 		existingUser.setAddress(updatedUser.getAddress());
 		existingUser.setCart(updatedUser.getCart());
 		

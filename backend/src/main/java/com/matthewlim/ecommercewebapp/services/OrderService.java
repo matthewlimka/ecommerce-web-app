@@ -71,8 +71,8 @@ public class OrderService {
 		return orders;
 	}
 	
-	public Order findByOrderItem(OrderItem orderItem) {
-		Order order = orderRepo.findByOrderItem(orderItem)
+	public Order findByOrderItems(OrderItem orderItem) {
+		Order order = orderRepo.findByOrderItems(orderItem)
 				.orElseThrow(() -> {
 					logger.error("No order with order item ID " + orderItem.getOrderItemId() + " found");
 					return new OrderNotFoundException("No order with order item ID " + orderItem.getOrderItemId() + " found");
