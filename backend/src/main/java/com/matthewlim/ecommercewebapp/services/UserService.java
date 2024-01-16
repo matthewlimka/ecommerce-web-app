@@ -1,11 +1,14 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
 import com.matthewlim.ecommercewebapp.models.User;
@@ -44,17 +47,18 @@ public class UserService {
 	public User findByEmail(String email) {
 		User user = userRepo.findByEmail(email)
 				.orElseThrow(() -> {
-					logger.error("No user with email: " + email + " found");
+					logger.error("No user with email " + email + " found");
 					return new UserNotFoundException("No user with email " + email + " found");
 				});
 		
-		logger.info("Successfully found user with email" + email);
+		logger.info("Successfully found user with email " + email);
 		return user;
 	}
 	
 	public List<User> findAllUsers() {
 		List<User> userList = userRepo.findAll();
 		
+		logger.info("Successfully found " + userList.size() + " users");
 		return userList;
 	}
 	
@@ -82,10 +86,27 @@ public class UserService {
 		return userRepo.save(existingUser);
 	}
 	
+	public User partialUpdateUser(Long userId, Map<String, Object> fields) {
+		User existingUser = userRepo.findById(userId)
+				.orElseThrow(() -> {
+					logger.error("No user with user ID " + userId + " found");
+					return new UserNotFoundException("No user with user ID " + userId + " found");
+				});
+		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(User.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingUser, value);
+		});
+		
+		logger.info("Successfully updated user with user ID " + userId);
+		return userRepo.save(existingUser);
+	}
+	
 	public void deleteUser(Long userId) {
 		User existingUser = userRepo.findById(userId)
 				.orElseThrow(() -> {
-					logger.error("No ucser with user ID " + userId + " found");
+					logger.error("No user with user ID " + userId + " found");
 					return new UserNotFoundException("No user with user ID " + userId + " found");
 				});
 		

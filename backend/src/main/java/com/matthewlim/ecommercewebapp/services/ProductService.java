@@ -1,12 +1,15 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.ProductNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Product;
@@ -52,6 +55,13 @@ public class ProductService {
 		return products;
 	}
 	
+	public List<Product> findAllProducts() {
+		List<Product> productList = productRepo.findAll();
+		
+		logger.info("Successfully found " + productList.size() + " products");
+		return productList;
+	}
+	
 	public Product addProduct(Product product) {
 		logger.info("Successfully registered new product with product ID " + product.getProductId());
 		return productRepo.save(product);
@@ -68,8 +78,24 @@ public class ProductService {
 		existingProduct.setPrice(updatedProduct.getPrice());
 		existingProduct.setStockQuantity(updatedProduct.getStockQuantity());
 		
-		logger.info("Successfully updated product with product ID " + productId);
+		logger.info("Successfully updated product with product ID " + productId);	
+		return productRepo.save(existingProduct);
+	}
+	
+	public Product partialUpdateProduct(Long productId, Map<String, Object> fields) {
+		Product existingProduct = productRepo.findById(productId)
+				.orElseThrow(() -> {
+					logger.error("No product with product ID " + productId + " found");
+					return new ProductNotFoundException("No product with product ID " + productId + " found");
+				});
 		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(Product.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingProduct, value);
+		});
+		
+		logger.info("Successfully updated product with product ID " + productId);
 		return productRepo.save(existingProduct);
 	}
 	
@@ -80,7 +106,7 @@ public class ProductService {
 					return new ProductNotFoundException("No product with product ID " + productId + " found");
 				});
 		
-		logger.info("Successfully delete product with product ID " + productId);
+		logger.info("Successfully deleted product with product ID " + productId);
 		productRepo.delete(existingProduct);
 	}
 }

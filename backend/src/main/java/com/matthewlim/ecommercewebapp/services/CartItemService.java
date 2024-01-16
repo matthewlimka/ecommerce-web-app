@@ -1,11 +1,14 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.CartItemNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Cart;
@@ -49,8 +52,15 @@ public class CartItemService {
 	public List<CartItem> findByProduct(Product product) {
 		List<CartItem> cartItems = cartItemRepo.findByProduct(product);
 		
-		logger.info("Successfully found " + cartItems.size() + " cart item(s) with stock quantity " + product);
+		logger.info("Successfully found " + cartItems.size() + " cart item(s) with product " + product);
 		return cartItems;
+	}
+	
+	public List<CartItem> findAllCartItems() {
+		List<CartItem> cartItemList = cartItemRepo.findAll();
+		
+		logger.info("Successfully found " + cartItemList.size() + " cart items");
+		return cartItemList;
 	}
 	
 	public CartItem addCartItem(CartItem cartItem) {
@@ -70,7 +80,23 @@ public class CartItemService {
 		existingCartItem.setProduct(updatedCartItem.getProduct());
 		
 		logger.info("Successfully updated cart item with cart item ID " + cartItemId);
+		return cartItemRepo.save(existingCartItem);
+	}
+	
+	public CartItem partialUpdateCartItem(Long cartItemId, Map<String, Object> fields) {
+		CartItem existingCartItem = cartItemRepo.findById(cartItemId)
+				.orElseThrow(() -> {
+					logger.error("No cart item with cart item ID " + cartItemId + " found");
+					return new CartItemNotFoundException("No cart item with cart item ID " + cartItemId + " found");
+				});
 		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(CartItem.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingCartItem, value);
+		});
+		
+		logger.info("Successfully updated cart item with cart item ID " + cartItemId);
 		return cartItemRepo.save(existingCartItem);
 	}
 	
@@ -81,7 +107,7 @@ public class CartItemService {
 					return new CartItemNotFoundException("No cart item with cart item ID " + cartItemId + " found");
 				});
 		
-		logger.info("Successfully delete cart item with cart item ID " + cartItemId);
+		logger.info("Successfully deleted cart item with cart item ID " + cartItemId);
 		cartItemRepo.delete(existingCartItem);
 	}
 }

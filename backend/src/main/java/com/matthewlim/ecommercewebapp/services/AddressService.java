@@ -1,11 +1,14 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.AddressNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
@@ -68,11 +71,12 @@ public class AddressService {
 	public List<Address> findAllAddresses() {
 		List<Address> addressList = addressRepo.findAll();
 		
+		logger.info("Successfully found " + addressList.size() + " addresses");
 		return addressList;
 	}
 	
 	public Address addAddress(Address address) {
-		logger.info("Successfully registered new address with addressID " + address.getAddressId());
+		logger.info("Successfully registered new address with address ID " + address.getAddressId());
 		return addressRepo.save(address);
 	}
 	
@@ -93,10 +97,27 @@ public class AddressService {
 		return addressRepo.save(existingAddress);
 	}
 	
+	public Address partialUpdateAddress(Long addressId, Map<String, Object> fields) {
+		Address existingAddress = addressRepo.findById(addressId)
+				.orElseThrow(() -> {
+					logger.error("No address with address ID " + addressId + " found");
+					return new AddressNotFoundException("No address with address ID " + addressId + " found");
+				});
+		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(Address.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingAddress, value);
+		});
+		
+		logger.info("Successfully updated address with address ID " + addressId);
+		return addressRepo.save(existingAddress);
+	}
+	
 	public void deleteAddress(Long addressId) {
 		Address existingAddress = addressRepo.findById(addressId)
 				.orElseThrow(() -> {
-					logger.error("No ucser with address ID " + addressId + " found");
+					logger.error("No user with address ID " + addressId + " found");
 					return new AddressNotFoundException("No address with address ID " + addressId + " found");
 				});
 		

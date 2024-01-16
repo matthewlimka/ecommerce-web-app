@@ -1,12 +1,15 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.OrderItemNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Order;
@@ -61,6 +64,13 @@ public class OrderItemService {
 		return orderItems;
 	}
 	
+	public List<OrderItem> findAllOrderItems() {
+		List<OrderItem> orderItemList = orderItemRepo.findAll();
+		
+		logger.info("Successfully found " + orderItemList.size() + " order items");
+		return orderItemList;
+	}
+	
 	public OrderItem addOrderItem(OrderItem orderItem) {
 		logger.info("Successfully registered new order item with order item ID " + orderItem.getOrderItemId());
 		return orderItemRepo.save(orderItem);
@@ -79,7 +89,23 @@ public class OrderItemService {
 		existingOrderItem.setProduct(updatedOrderItem.getProduct());
 		
 		logger.info("Successfully updated order item with order item ID " + orderItemId);
+		return orderItemRepo.save(existingOrderItem);
+	}
+	
+	public OrderItem partialUpdateOrderItem(Long orderItemId, Map<String, Object> fields) {
+		OrderItem existingOrderItem = orderItemRepo.findById(orderItemId)
+				.orElseThrow(() -> {
+					logger.error("No order item with order item ID " + orderItemId + " found");
+					return new OrderItemNotFoundException("No order item with order item ID " + orderItemId + " found");
+				});
 		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(OrderItem.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingOrderItem, value);
+		});
+		
+		logger.info("Successfully updated order item with order item ID " + orderItemId);
 		return orderItemRepo.save(existingOrderItem);
 	}
 	
@@ -90,7 +116,7 @@ public class OrderItemService {
 					return new OrderItemNotFoundException("No order item with order item ID " + orderItemId + " found");
 				});
 		
-		logger.info("Successfully delete order item with order item ID " + orderItemId);
+		logger.info("Successfully deleted order item with order item ID " + orderItemId);
 		orderItemRepo.delete(existingOrderItem);
 	}
 }

@@ -1,9 +1,14 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.CartNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Cart;
@@ -52,6 +57,13 @@ public class CartService {
 		return cart;
 	}
 	
+	public List<Cart> findAllCarts() {
+		List<Cart> cartList = cartRepo.findAll();
+		
+		logger.info("Successfully found " + cartList.size() + " carts");
+		return cartList;
+	}
+	
 	public Cart addCart(Cart cart) {
 		logger.info("Successfully registered new cart with cart ID " + cart.getCartId());
 		return cartRepo.save(cart);
@@ -68,7 +80,23 @@ public class CartService {
 		existingCart.setCartItems(updatedCart.getCartItems());
 		
 		logger.info("Successfully updated cart with cart ID " + cartId);
+		return cartRepo.save(existingCart);
+	}
+	
+	public Cart partialUpdateCart(Long cartId, Map<String, Object> fields) {
+		Cart existingCart = cartRepo.findById(cartId)
+				.orElseThrow(() -> {
+					logger.error("No cart with cart ID " + cartId + " found");
+					return new CartNotFoundException("No cart with cart ID " + cartId + " found");
+				});
 		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(Cart.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingCart, value);
+		});
+		
+		logger.info("Successfully updated cart with cart ID " + cartId);
 		return cartRepo.save(existingCart);
 	}
 	
@@ -79,7 +107,7 @@ public class CartService {
 					return new CartNotFoundException("No cart with cart ID " + cartId + " found");
 				});
 		
-		logger.info("Successfully delete cart with cart ID " + cartId);
+		logger.info("Successfully deleted cart with cart ID " + cartId);
 		cartRepo.delete(existingCart);
 	}
 }

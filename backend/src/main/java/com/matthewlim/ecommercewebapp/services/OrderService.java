@@ -1,13 +1,16 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.enums.OrderStatus;
 import com.matthewlim.ecommercewebapp.exceptions.OrderNotFoundException;
@@ -90,6 +93,13 @@ public class OrderService {
 		return order;
 	}
 	
+	public List<Order> findAllOrders() {
+		List<Order> orderList = orderRepo.findAll();
+		
+		logger.info("Successfully found " + orderList.size() + " orders");
+		return orderList;
+	}
+	
 	public Order addOrder(Order order) {
 		logger.info("Successfully registered new order with order ID " + order.getOrderId());
 		return orderRepo.save(order);
@@ -110,7 +120,23 @@ public class OrderService {
 		existingOrder.setPayment(updatedOrder.getPayment());		
 		
 		logger.info("Successfully updated order with order ID " + orderId);
+		return orderRepo.save(existingOrder);
+	}
+	
+	public Order partialUpdateOrder(Long orderId, Map<String, Object> fields) {
+		Order existingOrder = orderRepo.findById(orderId)
+				.orElseThrow(() -> {
+					logger.error("No order with order ID " + orderId + " found");
+					return new OrderNotFoundException("No order with order ID " + orderId + " found");
+				});
 		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(Order.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingOrder, value);
+		});
+		
+		logger.info("Successfully updated order with order ID " + orderId);
 		return orderRepo.save(existingOrder);
 	}
 	
@@ -121,7 +147,7 @@ public class OrderService {
 					return new OrderNotFoundException("No order with order ID " + orderId + " found");
 				});
 		
-		logger.info("Successfully delete order with order ID " + orderId);
+		logger.info("Successfully deleted order with order ID " + orderId);
 		orderRepo.delete(existingOrder);
 	}
 }

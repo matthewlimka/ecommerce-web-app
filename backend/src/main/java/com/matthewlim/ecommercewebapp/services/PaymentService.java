@@ -1,13 +1,16 @@
 package com.matthewlim.ecommercewebapp.services;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
 import com.matthewlim.ecommercewebapp.exceptions.PaymentNotFoundException;
@@ -81,6 +84,13 @@ public class PaymentService {
 		return payment;
 	}
 	
+	public List<Payment> findAllPayments() {
+		List<Payment> paymentList = paymentRepo.findAll();
+		
+		logger.info("Successfully found " + paymentList.size() + " payments");
+		return paymentList;
+	}
+	
 	public Payment addPayment(Payment payment) {
 		logger.info("Successfully registered new payment with payment ID " + payment.getPaymentId());
 		return paymentRepo.save(payment);
@@ -100,7 +110,23 @@ public class PaymentService {
 		existingPayment.setOrder(updatedPayment.getOrder());
 		
 		logger.info("Successfully updated payment with payment ID " + paymentId);
+		return paymentRepo.save(existingPayment);
+	}
+	
+	public Payment partialUpdatePayment(Long paymentId, Map<String, Object> fields) {
+		Payment existingPayment = paymentRepo.findById(paymentId)
+				.orElseThrow(() -> {
+					logger.error("No payment with payment ID " + paymentId + " found");
+					return new PaymentNotFoundException("No payment with payment ID " + paymentId + " found");
+				});
 		
+		fields.forEach((key, value) -> {
+			Field field = ReflectionUtils.findField(Payment.class, key);
+			field.setAccessible(true);
+			ReflectionUtils.setField(field, existingPayment, value);
+		});
+		
+		logger.info("Successfully updated payment with payment ID " + paymentId);
 		return paymentRepo.save(existingPayment);
 	}
 	
@@ -111,7 +137,7 @@ public class PaymentService {
 					return new PaymentNotFoundException("No payment with payment ID " + paymentId + " found");
 				});
 		
-		logger.info("Successfully delete payment with payment ID " + paymentId);
+		logger.info("Successfully deleted payment with payment ID " + paymentId);
 		paymentRepo.delete(existingPayment);
 	}
 }
