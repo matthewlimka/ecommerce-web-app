@@ -13,5 +13,5 @@ import com.matthewlim.ecommercewebapp.models.User;
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
 	Optional<Cart> findByUser(User user);
-	Optional<Cart> findByCartItem(CartItem cartItem);
+	Optional<Cart> findByCartItems(CartItem cartItem);
 }

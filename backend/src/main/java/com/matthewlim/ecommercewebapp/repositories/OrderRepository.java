@@ -21,6 +21,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Order> findByTotalAmount(BigDecimal totalAmount);
 	List<Order> findByOrderStatus(OrderStatus orderStatus);
 	List<Order> findByUser(User user);
-	Optional<Order> findByOrderItem(OrderItem orderItem);
+	Optional<Order> findByOrderItems(OrderItem orderItem);
 	Optional<Order> findByPayment(Payment payment);
 }
