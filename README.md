@@ -1,6 +1,6 @@
 # ShoppersGate - E-Commerce Web App
 
-ShoppersGate is a simple e-commerce web application built using Spring Boot and React. This is meant to be a personal project to integrate various technologies and software development practices into a full-stack web app built with Spring Boot and React.
+ShoppersGate is a simple e-commerce web application built using Spring Boot and React.
 
 ## Project Details
 
@@ -14,7 +14,7 @@ Features include:
 - Viewing order history and order status
 - Making payments for orders
 
-Technologies:
+Technologies involved:
 - **Spring Boot:** Backend REST API development
 - **React:** Frontend reactive UI development
 - **MySQL:** Database storage
