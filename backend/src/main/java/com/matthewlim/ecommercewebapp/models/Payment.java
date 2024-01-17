@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
 
 import jakarta.persistence.Entity;
@@ -16,9 +17,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Component
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "payments")
 public class Payment {
 
@@ -33,13 +38,10 @@ public class Payment {
 	@Enumerated(EnumType.STRING)
 	private PaymentMethod paymentMethod;
 	
+	@JsonIgnore
 	@OneToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
-
-	public Payment() {
-		super();
-	}
 	
 	public Payment(LocalDateTime paymentDate, String transactionId, BigDecimal amount, PaymentMethod paymentMethod,
 			Order order) {
@@ -48,54 +50,6 @@ public class Payment {
 		this.transactionId = transactionId;
 		this.amount = amount;
 		this.paymentMethod = paymentMethod;
-		this.order = order;
-	}
-
-	public Long getPaymentId() {
-		return paymentId;
-	}
-
-	public void setPaymentId(Long paymentId) {
-		this.paymentId = paymentId;
-	}
-
-	public LocalDateTime getPaymentDate() {
-		return paymentDate;
-	}
-
-	public void setPaymentDate(LocalDateTime paymentDate) {
-		this.paymentDate = paymentDate;
-	}
-
-	public String getTransactionId() {
-		return transactionId;
-	}
-
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-
-	public PaymentMethod getPaymentMethod() {
-		return paymentMethod;
-	}
-
-	public void setPaymentMethod(PaymentMethod paymentMethod) {
-		this.paymentMethod = paymentMethod;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
 		this.order = order;
 	}
 }
