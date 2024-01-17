@@ -48,7 +48,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{userId}")
 	public User getUser(@PathVariable Long userId) throws UserNotFoundException {
 		return userService.findByUserId(userId);
 	}
@@ -58,24 +58,24 @@ public class UserController {
 		User savedUser = userService.addUser(user);
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
-				.path("/{id}")
+				.path("/{userId}")
 				.buildAndExpand(user.getUserId())
 				.toUri();
 		
 		return ResponseEntity.created(location).body(savedUser);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{userId}")
 	public User updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
 		return userService.updateUser(userId, updatedUser);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{userId}")
 	public User partialUpdateUser(@PathVariable Long userId, @RequestBody Map<String, Object> fields) {
 		return userService.partialUpdateUser(userId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{userId}")
 	public void deleteUser(@PathVariable Long userId) {
 		userService.deleteUser(userId);
 	}

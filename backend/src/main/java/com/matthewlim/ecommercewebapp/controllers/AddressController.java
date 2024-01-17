@@ -33,7 +33,7 @@ public class AddressController {
 	private AddressService addressService;
 
 	@GetMapping
-	public List<Address> getAddresss(@RequestParam(required = false) String street, @RequestParam(required = false) String city, @RequestParam(required = false) String state, @RequestParam(required = false) String postalCode, @RequestParam(required = false) String country, @RequestParam(required = false) User user) {
+	public List<Address> getAddresses(@RequestParam(required = false) String street, @RequestParam(required = false) String city, @RequestParam(required = false) String state, @RequestParam(required = false) String postalCode, @RequestParam(required = false) String country, @RequestParam(required = false) User user) {
 		if ( street != null ) {
 			return addressService.findByStreet(street);
 		} else if ( city != null ) {
@@ -51,7 +51,7 @@ public class AddressController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{addressId}")
 	public Address getAddress(@PathVariable Long addressId) throws AddressNotFoundException {
 		return addressService.findByAddressId(addressId);
 	}
@@ -61,24 +61,24 @@ public class AddressController {
 		Address savedAddress = addressService.addAddress(address);
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
-				.path("/{id}")
+				.path("/{addressId}")
 				.buildAndExpand(address.getAddressId())
 				.toUri();
 		
 		return ResponseEntity.created(location).body(savedAddress);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{addressId}")
 	public Address updateAddress(@PathVariable Long addressId, @RequestBody Address updatedAddress) {
 		return addressService.updateAddress(addressId, updatedAddress);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{addressId}")
 	public Address partialUpdateAddress(@PathVariable Long addressId, @RequestBody Map<String, Object> fields) {
 		return addressService.partialUpdateAddress(addressId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{addressId}")
 	public void deleteAddress(@PathVariable Long addressId) {
 		addressService.deleteAddress(addressId);
 	}

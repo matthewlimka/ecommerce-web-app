@@ -44,7 +44,7 @@ public class CartItemController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{cartItemId}")
 	public CartItem getCartItem(@PathVariable Long cartItemId) throws CartItemNotFoundException {
 		return cartItemService.findByCartItemId(cartItemId);
 	}
@@ -61,17 +61,17 @@ public class CartItemController {
 		return ResponseEntity.created(location).body(savedCartItem);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{cartItemId}")
 	public CartItem updateCartItem(@PathVariable Long cartItemId, @RequestBody CartItem updatedCartItem) {
 		return cartItemService.updateCartItem(cartItemId, updatedCartItem);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{cartItemId}")
 	public CartItem partialUpdateCartItem(@PathVariable Long cartItemId, @RequestBody Map<String, Object> fields) {
 		return cartItemService.partialUpdateCartItem(cartItemId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{cartItemId}")
 	public void deleteCartItem(@PathVariable Long cartItemId) {
 		cartItemService.deleteCartItem(cartItemId);
 	}

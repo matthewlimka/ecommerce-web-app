@@ -56,7 +56,7 @@ public class OrderController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{orderId}")
 	public Order getOrder(@PathVariable Long orderId) throws OrderNotFoundException {
 		return orderService.findByOrderId(orderId);
 	}
@@ -73,17 +73,17 @@ public class OrderController {
 		return ResponseEntity.created(location).body(savedOrder);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{orderId}")
 	public Order updateOrder(@PathVariable Long orderId, @RequestBody Order updatedOrder) {
 		return orderService.updateOrder(orderId, updatedOrder);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{orderId}")
 	public Order partialUpdateOrder(@PathVariable Long orderId, @RequestBody Map<String, Object> fields) {
 		return orderService.partialUpdateOrder(orderId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{orderId}")
 	public void deleteOrder(@PathVariable Long orderId) {
 		orderService.deleteOrder(orderId);
 	}

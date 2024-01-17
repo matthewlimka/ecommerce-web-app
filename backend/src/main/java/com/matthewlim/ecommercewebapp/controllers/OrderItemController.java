@@ -47,7 +47,7 @@ public class OrderItemController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{orderItemId}")
 	public OrderItem getOrderItem(@PathVariable Long orderItemId) throws OrderItemNotFoundException {
 		return orderItemService.findByOrderItemId(orderItemId);
 	}
@@ -64,17 +64,17 @@ public class OrderItemController {
 		return ResponseEntity.created(location).body(savedOrderItem);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{orderItemId}")
 	public OrderItem updateOrderItem(@PathVariable Long orderItemId, @RequestBody OrderItem updatedOrderItem) {
 		return orderItemService.updateOrderItem(orderItemId, updatedOrderItem);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{orderItemId}")
 	public OrderItem partialUpdateOrderItem(@PathVariable Long orderItemId, @RequestBody Map<String, Object> fields) {
 		return orderItemService.partialUpdateOrderItem(orderItemId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{orderItemId}")
 	public void deleteOrderItem(@PathVariable Long orderItemId) {
 		orderItemService.deleteOrderItem(orderItemId);
 	}

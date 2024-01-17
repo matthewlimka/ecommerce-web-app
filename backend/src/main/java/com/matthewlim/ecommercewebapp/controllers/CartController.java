@@ -44,7 +44,7 @@ public class CartController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{cartId}")
 	public Cart getCart(@PathVariable Long cartId) throws CartNotFoundException {
 		return cartService.findByCartId(cartId);
 	}
@@ -61,17 +61,17 @@ public class CartController {
 		return ResponseEntity.created(location).body(savedCart);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{cartId}")
 	public Cart updateCart(@PathVariable Long cartId, @RequestBody Cart updatedCart) {
 		return cartService.updateCart(cartId, updatedCart);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{cartId}")
 	public Cart partialUpdateCart(@PathVariable Long cartId, @RequestBody Map<String, Object> fields) {
 		return cartService.partialUpdateCart(cartId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{cartId}")
 	public void deleteCart(@PathVariable Long cartId) {
 		cartService.deleteCart(cartId);
 	}

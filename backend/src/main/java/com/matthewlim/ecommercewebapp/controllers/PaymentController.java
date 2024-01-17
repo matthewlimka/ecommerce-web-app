@@ -52,7 +52,7 @@ public class PaymentController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{paymentId}")
 	public Payment getPayment(@PathVariable Long paymentId) throws PaymentNotFoundException {
 		return paymentService.findByPaymentId(paymentId);
 	}
@@ -69,17 +69,17 @@ public class PaymentController {
 		return ResponseEntity.created(location).body(savedPayment);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{paymentId}")
 	public Payment updatePayment(@PathVariable Long paymentId, @RequestBody Payment updatedPayment) {
 		return paymentService.updatePayment(paymentId, updatedPayment);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{paymentId}")
 	public Payment partialUpdatePayment(@PathVariable Long paymentId, @RequestBody Map<String, Object> fields) {
 		return paymentService.partialUpdatePayment(paymentId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{paymentId}")
 	public void deletePayment(@PathVariable Long paymentId) {
 		paymentService.deletePayment(paymentId);
 	}

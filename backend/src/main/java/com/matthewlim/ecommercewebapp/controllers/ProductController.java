@@ -43,7 +43,7 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{productId}")
 	public Product getProduct(@PathVariable Long productId) throws ProductNotFoundException {
 		return productService.findByProductId(productId);
 	}
@@ -60,17 +60,17 @@ public class ProductController {
 		return ResponseEntity.created(location).body(savedProduct);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{productId}")
 	public Product updateProduct(@PathVariable Long productId, @RequestBody Product updatedProduct) {
 		return productService.updateProduct(productId, updatedProduct);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{productId}")
 	public Product partialUpdateProduct(@PathVariable Long productId, @RequestBody Map<String, Object> fields) {
 		return productService.partialUpdateProduct(productId, fields);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{productId}")
 	public void deleteProduct(@PathVariable Long productId) {
 		productService.deleteProduct(productId);
 	}
