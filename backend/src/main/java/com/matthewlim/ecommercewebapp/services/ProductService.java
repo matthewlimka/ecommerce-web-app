@@ -92,6 +92,11 @@ public class ProductService {
 		fields.forEach((key, value) -> {
 			Field field = ReflectionUtils.findField(Product.class, key);
 			field.setAccessible(true);
+			
+			if (field.getType() == BigDecimal.class && value instanceof Number) {
+				value = new BigDecimal(((Number) value).doubleValue());
+			}
+			
 			ReflectionUtils.setField(field, existingProduct, value);
 		});
 		

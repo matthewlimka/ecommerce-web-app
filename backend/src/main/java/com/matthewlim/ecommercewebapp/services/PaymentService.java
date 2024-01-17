@@ -123,6 +123,13 @@ public class PaymentService {
 		fields.forEach((key, value) -> {
 			Field field = ReflectionUtils.findField(Payment.class, key);
 			field.setAccessible(true);
+			
+			if (field.getType() == PaymentMethod.class && value instanceof String) {
+				value = PaymentMethod.valueOf((String) value);
+			} else if (field.getType() == BigDecimal.class && value instanceof Number) {
+				value = new BigDecimal(((Number) value).doubleValue());
+			}
+			
 			ReflectionUtils.setField(field, existingPayment, value);
 		});
 		

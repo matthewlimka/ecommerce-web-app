@@ -102,6 +102,11 @@ public class OrderItemService {
 		fields.forEach((key, value) -> {
 			Field field = ReflectionUtils.findField(OrderItem.class, key);
 			field.setAccessible(true);
+			
+			if (field.getType() == BigDecimal.class && value instanceof Number) {
+				value = new BigDecimal(((Number) value).doubleValue());
+			}
+			
 			ReflectionUtils.setField(field, existingOrderItem, value);
 		});
 		

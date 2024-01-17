@@ -133,6 +133,13 @@ public class OrderService {
 		fields.forEach((key, value) -> {
 			Field field = ReflectionUtils.findField(Order.class, key);
 			field.setAccessible(true);
+			
+			if (field.getType() == OrderStatus.class && value instanceof String) {
+				value = OrderStatus.valueOf((String) value);
+			} else if (field.getType() == BigDecimal.class && value instanceof Number) {
+				value = new BigDecimal(((Number) value).doubleValue());
+			}
+			
 			ReflectionUtils.setField(field, existingOrder, value);
 		});
 		
