@@ -4,8 +4,8 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -16,7 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +38,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.matthewlim.ecommercewebapp.controllers.UserController;
-import com.matthewlim.ecommercewebapp.models.Address;
-import com.matthewlim.ecommercewebapp.models.Cart;
+import com.matthewlim.ecommercewebapp.controllers.OrderController;
+import com.matthewlim.ecommercewebapp.enums.OrderStatus;
 import com.matthewlim.ecommercewebapp.models.Order;
+import com.matthewlim.ecommercewebapp.models.OrderItem;
 import com.matthewlim.ecommercewebapp.models.User;
-import com.matthewlim.ecommercewebapp.services.UserService;
+import com.matthewlim.ecommercewebapp.services.OrderService;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(UserController.class)
-public class UserControllerUnitTest {
+@WebMvcTest(OrderController.class)
+public class OrderControllerUnitTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -56,9 +59,9 @@ public class UserControllerUnitTest {
 	private ObjectMapper objectMapper;
 	
 	@MockBean
-	private UserService userService;
+	private OrderService orderService;
 	
-	private User testUser;
+	private Order testOrder;
 	
 	@BeforeEach
 	public void setup() {
@@ -67,17 +70,17 @@ public class UserControllerUnitTest {
 				.apply(springSecurity()) 
 				.build();
 		
-		testUser = new User();
-		testUser.setUserId(1L);
+		testOrder = new Order();
+		testOrder.setOrderId(1L);
 	}
 	
 	@Test
 	@WithMockUser
-	public void testGetUsers() throws Exception {
-		List<User> userList = new ArrayList<User>();
-		when(userService.findAllUsers()).thenReturn(userList);
+	public void testGetOrders() throws Exception {
+		List<Order> orderList = new ArrayList<Order>();
+		when(orderService.findAllOrders()).thenReturn(orderList);
 		
-		mockMvc.perform(get("/api/v1/users"))
+		mockMvc.perform(get("/api/v1/orders"))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -87,59 +90,59 @@ public class UserControllerUnitTest {
 	
 	@Test
 	@WithMockUser
-	public void testGetUser() throws Exception {
-		Long userId = testUser.getUserId();
-		when(userService.findByUserId(userId)).thenReturn(testUser);
+	public void testGetOrder() throws Exception {
+		Long orderId = testOrder.getOrderId();
+		when(orderService.findByOrderId(orderId)).thenReturn(testOrder);
 		
-		mockMvc.perform(get("/api/v1/users/{userId}", userId))
+		mockMvc.perform(get("/api/v1/orders/{orderId}", orderId))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.userId", is(userId.intValue())))
+			.andExpect(jsonPath("$.orderId", is(orderId.intValue())))
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
 	@Test
 	@WithMockUser
-	public void testCreateUser() throws Exception {
-		User user = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", new ArrayList<Order>(), new Address(), new Cart());
-		user.setUserId(1L);
-		when(userService.addUser(testUser)).thenReturn(testUser);
+	public void testCreateOrder() throws Exception {
+		Order order = new Order(LocalDateTime.now(), BigDecimal.valueOf(20.0), OrderStatus.PENDING, new User(), new ArrayList<OrderItem>());
+		order.setOrderId(1L);
+		when(orderService.addOrder(testOrder)).thenReturn(testOrder);
 		
-		mockMvc.perform(post("/api/v1/users")
+		mockMvc.perform(post("/api/v1/orders")
 			.with(csrf())
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(testUser)))
+			.content(objectMapper.writeValueAsString(testOrder)))
 			.andDo(print())
 			.andExpect(status().isCreated())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.userId", is(user.getUserId().intValue())))
+			.andExpect(jsonPath("$.orderId", is(order.getOrderId().intValue())))
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
 	@Test
 	@WithMockUser
-	public void testUpdateUser() throws Exception {
-        Long userId = testUser.getUserId();
-        User updatedUser = new User("johnwick", "yeahhh", "johnwick@gmail.com", "John", "Wick", new ArrayList<Order>(), new Address(), new Cart());
-        when(userService.updateUser(userId, testUser)).thenReturn(updatedUser);
+	public void testUpdateOrder() throws Exception {
+        Long orderId = testOrder.getOrderId();
+        Order updatedOrder = new Order(LocalDateTime.now(), BigDecimal.valueOf(129.28), OrderStatus.PROCESSING, new User(), new ArrayList<OrderItem>(Arrays.asList(new OrderItem(), new OrderItem())));
+        when(orderService.updateOrder(orderId, testOrder)).thenReturn(updatedOrder);
         
-        mockMvc.perform(put("/api/v1/users/{userId}", userId)
+        mockMvc.perform(put("/api/v1/orders/{orderId}", orderId)
         	.with(csrf())
         	.contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updatedUser)))
+            .content(objectMapper.writeValueAsString(updatedOrder)))
             .andExpect(status().isOk());
 	}
 	
 	@Test
 	@WithMockUser
-	public void testPartialUpdateUser() throws Exception {
-        Long userId = testUser.getUserId();
+	public void testPartialUpdateOrder() throws Exception {
+        Long orderId = testOrder.getOrderId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
-        fieldsToUpdate.put("username", "keanureeves");
-        fieldsToUpdate.put("email", "keanureeves@gmail.com");
+        fieldsToUpdate.put("totalAmount", BigDecimal.valueOf(310.23));
+        fieldsToUpdate.put("orderStatus", OrderStatus.PROCESSING);
 
-        mockMvc.perform(patch("/api/v1/users/{userId}", userId)
+        mockMvc.perform(patch("/api/v1/orders/{orderId}", orderId)
         	.with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(fieldsToUpdate)))
@@ -148,10 +151,10 @@ public class UserControllerUnitTest {
 	
 	@Test
 	@WithMockUser
-	public void testDeleteUser() throws Exception {
-		Long userId = testUser.getUserId();
+	public void testDeleteOrder() throws Exception {
+		Long orderId = testOrder.getOrderId();
 		
-		mockMvc.perform(delete("/api/v1/users/{userId}", userId)
+		mockMvc.perform(delete("/api/v1/orders/{orderId}", orderId)
 			.with(csrf()))
 			.andExpect(status().isOk());
 	}

@@ -4,8 +4,8 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -35,16 +35,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.matthewlim.ecommercewebapp.controllers.UserController;
-import com.matthewlim.ecommercewebapp.models.Address;
+import com.matthewlim.ecommercewebapp.controllers.CartItemController;
 import com.matthewlim.ecommercewebapp.models.Cart;
-import com.matthewlim.ecommercewebapp.models.Order;
-import com.matthewlim.ecommercewebapp.models.User;
-import com.matthewlim.ecommercewebapp.services.UserService;
+import com.matthewlim.ecommercewebapp.models.CartItem;
+import com.matthewlim.ecommercewebapp.models.Product;
+import com.matthewlim.ecommercewebapp.services.CartItemService;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(UserController.class)
-public class UserControllerUnitTest {
+@WebMvcTest(CartItemController.class)
+public class CartItemControllerUnitTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -56,9 +55,9 @@ public class UserControllerUnitTest {
 	private ObjectMapper objectMapper;
 	
 	@MockBean
-	private UserService userService;
+	private CartItemService cartItemService;
 	
-	private User testUser;
+	private CartItem testCartItem;
 	
 	@BeforeEach
 	public void setup() {
@@ -67,17 +66,17 @@ public class UserControllerUnitTest {
 				.apply(springSecurity()) 
 				.build();
 		
-		testUser = new User();
-		testUser.setUserId(1L);
+		testCartItem = new CartItem();
+		testCartItem.setCartItemId(1L);
 	}
 	
 	@Test
 	@WithMockUser
-	public void testGetUsers() throws Exception {
-		List<User> userList = new ArrayList<User>();
-		when(userService.findAllUsers()).thenReturn(userList);
+	public void testGetCartItems() throws Exception {
+		List<CartItem> cartItemList = new ArrayList<CartItem>();
+		when(cartItemService.findAllCartItems()).thenReturn(cartItemList);
 		
-		mockMvc.perform(get("/api/v1/users"))
+		mockMvc.perform(get("/api/v1/cartItems"))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -87,59 +86,59 @@ public class UserControllerUnitTest {
 	
 	@Test
 	@WithMockUser
-	public void testGetUser() throws Exception {
-		Long userId = testUser.getUserId();
-		when(userService.findByUserId(userId)).thenReturn(testUser);
+	public void testGetCartItem() throws Exception {
+		Long cartItemId = testCartItem.getCartItemId();
+		when(cartItemService.findByCartItemId(cartItemId)).thenReturn(testCartItem);
 		
-		mockMvc.perform(get("/api/v1/users/{userId}", userId))
+		mockMvc.perform(get("/api/v1/cartItems/{cartItemId}", cartItemId))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.userId", is(userId.intValue())))
+			.andExpect(jsonPath("$.cartItemId", is(cartItemId.intValue())))
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
 	@Test
 	@WithMockUser
-	public void testCreateUser() throws Exception {
-		User user = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", new ArrayList<Order>(), new Address(), new Cart());
-		user.setUserId(1L);
-		when(userService.addUser(testUser)).thenReturn(testUser);
+	public void testCreateCartItem() throws Exception {
+		CartItem cartItem = new CartItem(2, new Cart(), new Product());
+		cartItem.setCartItemId(1L);
+		when(cartItemService.addCartItem(testCartItem)).thenReturn(testCartItem);
 		
-		mockMvc.perform(post("/api/v1/users")
+		mockMvc.perform(post("/api/v1/cartItems")
 			.with(csrf())
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(testUser)))
+			.content(objectMapper.writeValueAsString(testCartItem)))
 			.andDo(print())
 			.andExpect(status().isCreated())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.userId", is(user.getUserId().intValue())))
+			.andExpect(jsonPath("$.cartItemId", is(cartItem.getCartItemId().intValue())))
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
 	@Test
 	@WithMockUser
-	public void testUpdateUser() throws Exception {
-        Long userId = testUser.getUserId();
-        User updatedUser = new User("johnwick", "yeahhh", "johnwick@gmail.com", "John", "Wick", new ArrayList<Order>(), new Address(), new Cart());
-        when(userService.updateUser(userId, testUser)).thenReturn(updatedUser);
+	public void testUpdateCartItem() throws Exception {
+        Long cartItemId = testCartItem.getCartItemId();
+        CartItem updatedCartItem = new CartItem(2, new Cart(), new Product());
+        when(cartItemService.updateCartItem(cartItemId, testCartItem)).thenReturn(updatedCartItem);
         
-        mockMvc.perform(put("/api/v1/users/{userId}", userId)
+        mockMvc.perform(put("/api/v1/cartItems/{cartItemId}", cartItemId)
         	.with(csrf())
         	.contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updatedUser)))
+            .content(objectMapper.writeValueAsString(updatedCartItem)))
             .andExpect(status().isOk());
 	}
 	
 	@Test
 	@WithMockUser
-	public void testPartialUpdateUser() throws Exception {
-        Long userId = testUser.getUserId();
+	public void testPartialUpdateCartItem() throws Exception {
+        Long cartItemId = testCartItem.getCartItemId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
-        fieldsToUpdate.put("username", "keanureeves");
-        fieldsToUpdate.put("email", "keanureeves@gmail.com");
+        fieldsToUpdate.put("quantity", 3);
+        fieldsToUpdate.put("product", new Product());
 
-        mockMvc.perform(patch("/api/v1/users/{userId}", userId)
+        mockMvc.perform(patch("/api/v1/cartItems/{cartItemId}", cartItemId)
         	.with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(fieldsToUpdate)))
@@ -148,10 +147,10 @@ public class UserControllerUnitTest {
 	
 	@Test
 	@WithMockUser
-	public void testDeleteUser() throws Exception {
-		Long userId = testUser.getUserId();
+	public void testDeleteCartItem() throws Exception {
+		Long cartItemId = testCartItem.getCartItemId();
 		
-		mockMvc.perform(delete("/api/v1/users/{userId}", userId)
+		mockMvc.perform(delete("/api/v1/cartItems/{cartItemId}", cartItemId)
 			.with(csrf()))
 			.andExpect(status().isOk());
 	}
