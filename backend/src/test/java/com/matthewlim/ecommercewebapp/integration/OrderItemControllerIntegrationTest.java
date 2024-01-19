@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -75,6 +76,7 @@ public class OrderItemControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetOrderItemsEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/orderItems"))
 			.andExpect(status().isOk())
@@ -82,6 +84,7 @@ public class OrderItemControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetOrderItemEndpoint() throws Exception {
         Long orderItemId = testOrderItem.getOrderItemId();
         mockMvc.perform(get("/api/v1/orderItems/{orderItemId}", orderItemId))
@@ -90,6 +93,7 @@ public class OrderItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreateOrderItemEndpoint() throws Exception {
         OrderItem orderItem = new OrderItem();
 
@@ -100,6 +104,7 @@ public class OrderItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdateOrderItemEndpoint() throws Exception {
         Long orderItemId = testOrderItem.getOrderItemId();
         OrderItem updatedOrderItem = new OrderItem();
@@ -111,6 +116,7 @@ public class OrderItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdateOrderItemEndpoint() throws Exception {
         Long orderItemId = testOrderItem.getOrderItemId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -124,6 +130,7 @@ public class OrderItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeleteOrderItemEndpoint() throws Exception {
     	Long orderItemId = testOrderItem.getOrderItemId();
     	mockMvc.perform(delete("/api/v1/orderItems/{orderItemId}", orderItemId))

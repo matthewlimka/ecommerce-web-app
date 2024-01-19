@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -74,6 +75,7 @@ public class CartItemControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetCartItemsEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/cartItems"))
 			.andExpect(status().isOk())
@@ -81,6 +83,7 @@ public class CartItemControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetCartItemEndpoint() throws Exception {
         Long cartItemId = testCartItem.getCartItemId();
         mockMvc.perform(get("/api/v1/cartItems/{cartItemId}", cartItemId))
@@ -89,6 +92,7 @@ public class CartItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreateCartItemEndpoint() throws Exception {
         CartItem cartItem = new CartItem();
 
@@ -99,6 +103,7 @@ public class CartItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdateCartItemEndpoint() throws Exception {
         Long cartItemId = testCartItem.getCartItemId();
         CartItem updatedCartItem = new CartItem();
@@ -110,6 +115,7 @@ public class CartItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdateCartItemEndpoint() throws Exception {
         Long cartItemId = testCartItem.getCartItemId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -122,6 +128,7 @@ public class CartItemControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeleteCartItemEndpoint() throws Exception {
     	Long cartItemId = testCartItem.getCartItemId();
     	mockMvc.perform(delete("/api/v1/cartItems/{cartItemId}", cartItemId))

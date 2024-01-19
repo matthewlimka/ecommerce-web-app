@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -64,6 +65,7 @@ public class UserControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetUsersEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/users"))
 			.andExpect(status().isOk())
@@ -71,6 +73,7 @@ public class UserControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetUserEndpoint() throws Exception {
         Long userId = testUser.getUserId();
         mockMvc.perform(get("/api/v1/users/{userId}", userId))
@@ -79,6 +82,7 @@ public class UserControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreateUserEndpoint() throws Exception {
         User user = new User("johnWick", "yeah", "johnwick@gmail.com", "John", "Wick", new ArrayList<Order>(), new Address(), new Cart());
 
@@ -89,6 +93,7 @@ public class UserControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdateUserEndpoint() throws Exception {
         Long userId = testUser.getUserId();
         User updatedUser = new User("bobbyRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", new ArrayList<Order>(), new Address(), new Cart());
@@ -100,6 +105,7 @@ public class UserControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdateUserEndpoint() throws Exception {
         Long userId = testUser.getUserId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -116,6 +122,7 @@ public class UserControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeleteUserEndpoint() throws Exception {
     	Long userId = testUser.getUserId();
     	mockMvc.perform(delete("/api/v1/users/{userId}", userId))

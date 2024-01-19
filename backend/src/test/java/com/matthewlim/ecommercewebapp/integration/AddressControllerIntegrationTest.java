@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -67,6 +68,7 @@ public class AddressControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetAddressesEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/addresses"))
 			.andExpect(status().isOk())
@@ -74,6 +76,7 @@ public class AddressControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetAddressEndpoint() throws Exception {
         Long addressId = testAddress.getAddressId();
         mockMvc.perform(get("/api/v1/addresses/{addressId}", addressId))
@@ -82,6 +85,7 @@ public class AddressControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreateAddressEndpoint() throws Exception {
         Address address = new Address();
 
@@ -92,6 +96,7 @@ public class AddressControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdateAddressEndpoint() throws Exception {
         Long addressId = testAddress.getAddressId();
         Address updatedAddress = new Address("Oak Street", "San Francisco", "California", "111111", "USA", new User());
@@ -103,6 +108,7 @@ public class AddressControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdateAddressEndpoint() throws Exception {
         Long addressId = testAddress.getAddressId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -117,6 +123,7 @@ public class AddressControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeleteAddressEndpoint() throws Exception {
     	Long addressId = testAddress.getAddressId();
     	mockMvc.perform(delete("/api/v1/addresses/{addressId}", addressId))

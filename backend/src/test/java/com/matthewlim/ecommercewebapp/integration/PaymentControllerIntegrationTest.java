@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -70,6 +71,7 @@ public class PaymentControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetPaymentsEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/payments"))
 			.andExpect(status().isOk())
@@ -77,6 +79,7 @@ public class PaymentControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetPaymentEndpoint() throws Exception {
         Long paymentId = testPayment.getPaymentId();
         mockMvc.perform(get("/api/v1/payments/{paymentId}", paymentId))
@@ -85,6 +88,7 @@ public class PaymentControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreatePaymentEndpoint() throws Exception {
         Payment payment = new Payment();
 
@@ -95,6 +99,7 @@ public class PaymentControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdatePaymentEndpoint() throws Exception {
         Long paymentId = testPayment.getPaymentId();
         Payment updatedPayment = new Payment();
@@ -106,6 +111,7 @@ public class PaymentControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdatePaymentEndpoint() throws Exception {
         Long paymentId = testPayment.getPaymentId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -119,6 +125,7 @@ public class PaymentControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeletePaymentEndpoint() throws Exception {
     	Long paymentId = testPayment.getPaymentId();
     	mockMvc.perform(delete("/api/v1/payments/{paymentId}", paymentId))

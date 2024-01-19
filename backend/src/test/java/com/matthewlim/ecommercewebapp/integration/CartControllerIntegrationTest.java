@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -69,6 +70,7 @@ public class CartControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetCartsEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/carts"))
 			.andExpect(status().isOk())
@@ -76,6 +78,7 @@ public class CartControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetCartEndpoint() throws Exception {
         Long cartId = testCart.getCartId();
         mockMvc.perform(get("/api/v1/carts/{cartId}", cartId))
@@ -84,6 +87,7 @@ public class CartControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreateCartEndpoint() throws Exception {
         Cart cart = new Cart();
 
@@ -94,6 +98,7 @@ public class CartControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdateCartEndpoint() throws Exception {
         Long cartId = testCart.getCartId();
         Cart updatedCart = new Cart(testCart.getUser(), new ArrayList<CartItem>());
@@ -105,6 +110,7 @@ public class CartControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdateCartEndpoint() throws Exception {
         Long cartId = testCart.getCartId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -117,6 +123,7 @@ public class CartControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeleteCartEndpoint() throws Exception {
     	Long cartId = testCart.getCartId();
     	mockMvc.perform(delete("/api/v1/carts/{cartId}", cartId))

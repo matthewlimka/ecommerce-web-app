@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -61,6 +62,7 @@ public class ProductControllerIntegrationTest {
     }
     
 	@Test
+	@WithMockUser
 	public void testGetProductsEndpoint() throws Exception {
 		mockMvc.perform(get("/api/v1/products"))
 			.andExpect(status().isOk())
@@ -68,6 +70,7 @@ public class ProductControllerIntegrationTest {
 	}
 	
     @Test
+    @WithMockUser
     public void testGetProductEndpoint() throws Exception {
         Long productId = testProduct.getProductId();
         mockMvc.perform(get("/api/v1/products/{productId}", productId))
@@ -76,6 +79,7 @@ public class ProductControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testCreateProductEndpoint() throws Exception {
         Product product = new Product();
         
@@ -86,6 +90,7 @@ public class ProductControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testUpdateProductEndpoint() throws Exception {
         Long productId = testProduct.getProductId();
         Product updatedProduct = new Product();
@@ -97,6 +102,7 @@ public class ProductControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testPartialUpdateProductEndpoint() throws Exception {
         Long productId = testProduct.getProductId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
@@ -110,6 +116,7 @@ public class ProductControllerIntegrationTest {
     }
     
     @Test
+    @WithMockUser
     public void testDeleteProductEndpoint() throws Exception {
     	Long productId = testProduct.getProductId();
     	mockMvc.perform(delete("/api/v1/products/{productId}", productId))
