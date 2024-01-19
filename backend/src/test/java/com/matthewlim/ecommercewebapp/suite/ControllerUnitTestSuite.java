@@ -4,5 +4,5 @@ import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@SelectPackages({"com.matthewlim.ecommerceapp.controllers.unit"})
+@SelectPackages({"com.matthewlim.ecommercewebapp.unit.controllers"})
 public class ControllerUnitTestSuite {}
