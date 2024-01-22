@@ -30,11 +30,11 @@ Technologies involved:
    - Configure the database
    - Implement a placeholder for Spring Security to facilitate backend development and testing
 
-2. **Basic Backend Testing** (in progress)
+2. **Basic Backend Testing** (done)
    - Perform integration testing with JUnit
    - Conduct unit testing with JUnit
 
-3. **Integrate Spring Security**
+3. **Integrate Spring Security** (in progress)
    - Implement JWT for authentication and OAuth2 for authorization
    - Update backend tests to work with Spring Security
 
