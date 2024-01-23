@@ -1,12 +1,17 @@
 package com.matthewlim.ecommercewebapp.services;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -17,12 +22,23 @@ import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 	Logger logger = LogManager.getLogger(UserService.class);
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
+		User user = userRepo.findByUsername(username)
+				.orElseThrow(() -> {
+					logger.error("No user with username " + username + " found");
+					return new UserNotFoundException("No user with username " + username + " found");
+				});
+		GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
+		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Arrays.asList(authority));
+	}
 	
 	public User findByUserId(Long userId) {
 		User user = userRepo.findById(userId)
