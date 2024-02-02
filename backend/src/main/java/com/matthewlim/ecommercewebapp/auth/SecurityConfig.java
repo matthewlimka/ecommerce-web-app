@@ -4,6 +4,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -42,9 +46,9 @@ public class SecurityConfig {
 		return new InMemoryUserDetailsManager(User
 				.withUsername("user")
 				.password(passwordEncoder().encode("password"))
-				.authorities("read")
+				.roles("USER")
 				.build());
-	}
+	}	
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -72,17 +76,46 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
         		.csrf(csrf -> csrf.disable())
-//        		.securityMatcher("/api/**")
         		.authorizeHttpRequests(authorize -> authorize
-        			.requestMatchers("/", "/error", "/api/v1/login", "/api/v1/login/oauth2", "/api/v1/token").permitAll()
+        			.requestMatchers("/", "/error", "/login", "/login/oauth2/code/github", "/oauth2/authorization/github").permitAll()
         			.requestMatchers("/api/v1/**").authenticated()
         			.anyRequest().authenticated()
         		)
         		.oauth2Login(withDefaults())
-//        		.formLogin(withDefaults())
+        		.formLogin(form -> form.disable())
+        		.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint()))
         		.oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
         		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
+	}
+	
+	@Bean
+	public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+		AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+		authenticationManagerBuilder
+			.authenticationProvider(daoAuthenticationProvider())
+			.authenticationProvider(jwtAuthenticationProvider());
+		
+		return authenticationManagerBuilder.build();
+	}
+	
+	@Bean
+	public DaoAuthenticationProvider daoAuthenticationProvider() {
+		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(userService);
+		authenticationProvider.setPasswordEncoder(passwordEncoder());
+		
+		return authenticationProvider;
+	}
+	
+	@Bean
+	public JwtAuthenticationProvider jwtAuthenticationProvider() {
+		return new JwtAuthenticationProvider(jwtDecoder());
+	}
+	
+	@Bean
+	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+		return new JwtAuthenticationEntryPoint();
 	}
 	
 	@Bean
@@ -91,9 +124,30 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
-                .allowCredentials(true);
+                	.allowedOrigins("http://localhost:3000")
+                	.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+                	.allowCredentials(true);
+            
+                registry.addMapping("/login")
+                	.allowedOrigins("http://localhost:3000")
+                	.allowedMethods("POST")
+                	.allowCredentials(true);
+                
+                registry.addMapping("/login/oauth2/code/github")
+                	.allowedOrigins("http://localhost:3000")
+                	.allowedMethods("GET")
+                	.allowCredentials(true);
+                
+                registry.addMapping("/oauth2/authorization/github")
+            		.allowedOrigins("http://localhost:3000")
+            		.allowedMethods("GET", "POST")
+            		.allowedHeaders("*")
+                	.allowCredentials(true);
+                
+                registry.addMapping("/")
+            		.allowedOrigins("http://localhost:3000")
+            		.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+            		.allowCredentials(true);
             }
         };
     }
