@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -30,11 +31,12 @@ public class UserService implements UserDetailsService {
 	private UserRepository userRepo;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		logger.info("Loading user with username: " + username + "...");
 		User user = userRepo.findByUsername(username)
 				.orElseThrow(() -> {
 					logger.error("No user with username " + username + " found");
-					return new UserNotFoundException("No user with username " + username + " found");
+					return new UsernameNotFoundException("No user with username " + username + " found");
 				});
 		GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
 		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Arrays.asList(authority));
