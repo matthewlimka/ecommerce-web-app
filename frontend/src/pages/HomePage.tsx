@@ -17,6 +17,7 @@ const HomePage: React.FC = () => {
     return (
         <div>
             <h1>Welcome to the home page!</h1>
+            <p>Your JWT is {jwt}</p>
         </div>
     )
 }
