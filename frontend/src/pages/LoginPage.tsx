@@ -7,7 +7,7 @@ const LoginPage: React.FC = () => {
 
     const { jwt, login } = useAuth();
     const userRef = useRef<HTMLInputElement>(null);
-    const API = 'http://localhost:9001/api/v1';
+    const API = 'http://localhost:9001';
     const navigate = useNavigate();
 
     const [username, setUsername] = useState<string>('');
@@ -16,10 +16,11 @@ const LoginPage: React.FC = () => {
     const handleFormLogin = async (event: any) => {
         event.preventDefault()
 
-        await axios.post(`${API}/login`, JSON.stringify({ username: username, password: password }), { headers: { 'Content-Type': 'application/json' } })
+        await axios.post(`${API}/login?username=${username}&password=${password}`)
             .then(response => {
-                console.log('Received JWT: ' + response.data.token)
-                login(response.data.token)
+                console.log(response)
+                console.log('Received JWT: ' + response.data)
+                login(response.data)
                 console.log('Logged in successfully')
 
                 setUsername('')
@@ -40,7 +41,7 @@ const LoginPage: React.FC = () => {
         event.preventDefault()
 
         console.log('Redirecting you to GitHub')
-        await axios.get(`${API}/login/oauth2`, {})
+        await axios.get(`${API}/oauth2/authorization/github`)
             .then(response => {
                 console.log('Received JWT: ' + response.data.token)
                 login(response.data.token)
