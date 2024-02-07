@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -77,7 +78,7 @@ public class SecurityConfig {
         return http
         		.csrf(csrf -> csrf.disable())
         		.authorizeHttpRequests(authorize -> authorize
-        			.requestMatchers("/", "/error", "/login", "/login/oauth2/code/github", "/oauth2/authorization/github").permitAll()
+        			.requestMatchers("/", "/error", "/login", "/oauth2/token").permitAll()
         			.requestMatchers("/api/v1/**").authenticated()
         			.anyRequest().authenticated()
         		)
@@ -119,6 +120,11 @@ public class SecurityConfig {
 	}
 	
 	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+	
+	@Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
@@ -133,15 +139,9 @@ public class SecurityConfig {
                 	.allowedMethods("POST")
                 	.allowCredentials(true);
                 
-                registry.addMapping("/login/oauth2/code/github")
+                registry.addMapping("/oauth2/token")
                 	.allowedOrigins("http://localhost:3000")
-                	.allowedMethods("GET")
-                	.allowCredentials(true);
-                
-                registry.addMapping("/oauth2/authorization/github")
-            		.allowedOrigins("http://localhost:3000")
-            		.allowedMethods("GET", "POST")
-            		.allowedHeaders("*")
+                	.allowedMethods("GET", "OPTIONS")
                 	.allowCredentials(true);
                 
                 registry.addMapping("/")
