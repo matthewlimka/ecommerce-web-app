@@ -8,7 +8,6 @@ const OAuthCallbackPage = () => {
     const { jwt, code, login, updateCode } = useAuth();
     const API = 'http://localhost:9001';
     // const clientId = 'ae1c35b6915ac47d44c2';
-    // const clientSecret = '1eccae288f68a3c96d194228145260ffd8160d8e';
     // const redirectUri = 'http://localhost:3000/oauth/callback'; // API +'/oauth2/token'
     // const githubAccessTokenUrl = `https://github.com/login/oauth/access_token?grant_type=authorization_code&code=${code}&redirect_uri=${redirectUri}`;
     const navigate = useNavigate();
