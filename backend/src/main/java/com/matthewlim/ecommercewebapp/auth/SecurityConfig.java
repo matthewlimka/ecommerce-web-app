@@ -82,8 +82,6 @@ public class SecurityConfig {
         			.requestMatchers("/api/v1/**").authenticated()
         			.anyRequest().authenticated()
         		)
-        		.oauth2Login(withDefaults())
-        		.formLogin(form -> form.disable())
         		.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint()))
         		.oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
         		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -136,15 +134,15 @@ public class SecurityConfig {
             
                 registry.addMapping("/login")
                 	.allowedOrigins("http://localhost:3000")
-                	.allowedMethods("POST")
+                	.allowedMethods("GET", "POST")
                 	.allowCredentials(true);
                 
                 registry.addMapping("/oauth2/token")
                 	.allowedOrigins("http://localhost:3000")
-                	.allowedMethods("GET", "OPTIONS")
+                	.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                 	.allowCredentials(true);
                 
-                registry.addMapping("/")
+                registry.addMapping("*")
             		.allowedOrigins("http://localhost:3000")
             		.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             		.allowCredentials(true);
