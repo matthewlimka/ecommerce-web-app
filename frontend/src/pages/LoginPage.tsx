@@ -8,9 +8,8 @@ const LoginPage: React.FC = () => {
     const { login } = useAuth();
     const userRef = useRef<HTMLInputElement>(null);
     const API = 'http://localhost:9001';
-    const clientId = 'ae1c35b6915ac47d44c2';
-    const redirectUri = 'http://localhost:3000/oauth/callback'; // API + '/oauth2/token'
-    const githubAuthorizationUrl = `https://github.com/login/oauth/authorize?response_type=code&scope=user&client_id=${clientId}&redirect_uri=${redirectUri}`;
+    const CLIENT_ID = 'ae1c35b6915ac47d44c2';
+    const GITHUB_AUTHORIZATION_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`;
     const navigate = useNavigate();
 
     const [username, setUsername] = useState<string>('');
@@ -49,8 +48,7 @@ const LoginPage: React.FC = () => {
 
         console.log('Redirecting you to GitHub')
         try {
-            window.location.href = githubAuthorizationUrl
-            console.log('Redirecting you to GitHub login page')
+            window.location.href = GITHUB_AUTHORIZATION_URL; 
         } catch (error) {
             setError('Failed to log in via GitHub')
             console.log(error)
