@@ -5,54 +5,56 @@ import axios from "axios";
 
 const LoginPage: React.FC = () => {
 
-    const { jwt, login } = useAuth();
+    const { login } = useAuth();
     const userRef = useRef<HTMLInputElement>(null);
     const API = 'http://localhost:9001';
+    const clientId = 'ae1c35b6915ac47d44c2';
+    const redirectUri = 'http://localhost:3000/oauth/callback'; // API + '/oauth2/token'
+    const githubAuthorizationUrl = `https://github.com/login/oauth/authorize?response_type=code&scope=user&client_id=${clientId}&redirect_uri=${redirectUri}`;
     const navigate = useNavigate();
 
     const [username, setUsername] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const [password, setPassword] = useState<string>('')
+    const [error, setError] = useState<string>("");
 
     const handleFormLogin = async (event: any) => {
         event.preventDefault()
 
-        await axios.post(`${API}/login?username=${username}&password=${password}`)
-            .then(response => {
-                console.log(response)
-                console.log('Received JWT: ' + response.data)
-                login(response.data)
-                console.log('Logged in successfully')
+        try {
+            const response = await axios.post(`${API}/login?username=${username}&password=${password}`)
+            console.log('Received JWT: ' + response.data)
+            login(response.data)
+            console.log('Logged in successfully')
 
-                setUsername('')
-                setPassword('')
-                console.log('Redirecting you to the home page')
-                navigate('/home')
-            })
-            .catch(error => {
+            setUsername('')
+            setPassword('')
+            console.log('Redirecting you to the home page')
+            navigate('/home')
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
                 if (error.response?.status === 401) {
-                    console.log('Invalid credentials')
+                    setError('Invalid credentials')
                 } else {
-                    console.log('Failed to log in')
+                    setError('Failed to log in')
                 }
-            })
+            } else {
+                setError('Unknown error occurred')
+            }
+            console.log(error)
+        }
     }
 
     const handleGitHubLogin = async (event: any) => {
         event.preventDefault()
 
         console.log('Redirecting you to GitHub')
-        await axios.get(`${API}/oauth2/authorization/github`)
-            .then(response => {
-                console.log('Received JWT: ' + response.data.token)
-                login(response.data.token)
-                console.log('Logged in successfully')
-
-                console.log('Redirecting you to the home page')
-                navigate('/home')
-            })
-            .catch(error => {
-                console.log('Failed to log in via GitHub')
-            })
+        try {
+            window.location.href = githubAuthorizationUrl
+            console.log('Redirecting you to GitHub login page')
+        } catch (error) {
+            setError('Failed to log in via GitHub')
+            console.log(error)
+        }
     }
 
     return (
@@ -79,6 +81,7 @@ const LoginPage: React.FC = () => {
                     <button type="submit">Login</button>
                 </form>
             </div>
+            {error && <p>{error}</p>}
             <button onClick={handleGitHubLogin}>Sign In via GitHub</button>
             <button>Sign Up</button>
         </div>
