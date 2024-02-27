@@ -1,0 +1,104 @@
+.navBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 23rem;
+    padding-right: 23rem;
+    height: 65px;
+    background-color: teal;
+
+    .leftContainer {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        width: 60%;
+
+        :is(.homeContainer, .productContainer, .orderContainer) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        :is(.homeContainer, .productContainer, .orderContainer):hover {
+            background-color: #00b3b3;
+            transition: 0.3s;
+        }
+
+        .searchBar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 100%;
+            margin-left: 10px;
+
+            input {
+                width: 300px;
+                height: 30px;
+                border-radius: 5px;
+                border: none;
+                padding: 2px 0px 2px 10px;
+            }
+            
+            button {
+                background-color: turquoise;
+                border: none;
+                border-radius: 5px;
+                margin-left: 10px;
+                padding: 5px 10px 5px 10px;
+                height: 30px;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .rightContainer {
+        display: flex;
+        align-items: center;
+        height: 100%;
+
+        :is(.cartButton, .profileButton, .logoutButton, .signupButton, .loginButton) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        :is(.cartButton, .profileButton, .logoutButton, .signupButton, .loginButton):hover {
+            background-color: #00b3b3;
+            transition: 0.3s;
+        }
+
+        .loggedInContainer {
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            .logoutButton:hover {
+                cursor: pointer;
+            }
+        }
+
+        .notLoggedInContainer {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+    }
+}
+
+a, p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 75px;
+    padding: 0px 3px 0px 3px;
+}
+
+a.active {
+    text-decoration: underline;
+    text-decoration-color: red;
+    text-decoration-thickness: 5px;
+    text-underline-offset: 20px;
+}
