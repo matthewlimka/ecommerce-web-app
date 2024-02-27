@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from 'react';
 import axios from 'axios';
 
-interface APIContextType {
-    user: string[];
+type APIContextType = {
+    user: User | null;
     getUser: (jwt: string) => void;
     products: string[];
     getProducts: () => void;
@@ -14,8 +14,15 @@ interface APIContextType {
     getQueryResults: (query: string) => void;
 }
 
+interface User {
+    username: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+}
+
 const APIContext = createContext<APIContextType>({
-    user: [],
+    user: null,
     getUser: (jwt: string) => { },
     products: [],
     getProducts: () => { },
@@ -30,7 +37,7 @@ const APIContext = createContext<APIContextType>({
 export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const API = 'http://localhost:9001';
-    const [user, setUser] = useState<string[]>([]);
+    const [user, setUser] = useState<User | null>(null);
     const [products, setProducts] = useState<string[]>([]);
     const [cart, setCart] = useState<string[]>([]);
     const [orders, setOrders] = useState<string[]>([]);
