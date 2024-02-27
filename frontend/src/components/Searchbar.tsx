@@ -11,7 +11,7 @@ const Searchbar: React.FC = () => {
     }
     
     return (
-        <div>
+        <div className="searchBar">
             <input
                 type="text"
                 value={searchInput}
