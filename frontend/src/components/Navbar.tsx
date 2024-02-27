@@ -1,45 +1,79 @@
-import { useNavigate } from 'react-router-dom';
+import '../styles/Navbar.css';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useAPI } from '../contexts/APIContext';
 import Searchbar from './Searchbar';
 
 const Navbar: React.FC = () => {
-
-    const navigate = useNavigate();
+    const location = useLocation();
     const { jwt, logout } = useAuth();
+    const { user, getUser } = useAPI();
 
-    const handleLogin = () => {
-        navigate('/login')
-    }
+    useEffect(() => {
+        if (jwt !== null) {
+            getUser(jwt)
+        }
+    }, [jwt])
+
+    const getActiveClass = (path: string) => {
+        return location.pathname === path ? 'active' : '';
+    };
 
     const handleLogout = () => {
-        logout()
-    }
+        logout();
+    };
 
     return (
-        <div className="navBar">
-            <div className="topRow">
-                <div className="loginLogoutButton">
-                    {jwt !== null ? (
-                        <button onClick={handleLogin}>Logout</button>
-                    ) : (
-                        <button onClick={handleLogin}>Login</button>
-                    )
-                    }
+        <div className='navBar'>
+            <div className='leftContainer'>
+                <div className='homeContainer'>
+                    <Link to='/home' className={getActiveClass('/home')}>
+                        Home
+                    </Link>
                 </div>
+                <div className='productContainer'>
+                    <Link
+                        to='/products'
+                        className={getActiveClass('/products')}
+                    >
+                        Products
+                    </Link>
+                </div>
+                <div className='orderContainer'>
+                    <Link to='/orders' className={getActiveClass('/orders')}>
+                        Orders
+                    </Link>
+                </div>
+                <Searchbar />
             </div>
-            <div className="bottomRow">
-                <div className="homeButton">
-                    <button onClick={() => navigate('/home')}>Home</button>
-                </div>
-                <div className="searchBar">
-                    <Searchbar />
-                </div>
-                <div className="cartButton">
-                    <button onClick={() => navigate('/about')}>About</button>
-                </div>
+            <div className='rightContainer'>
+                {jwt !== null ? (
+                    <div className='loggedInContainer'>
+                        <div className='cartButton'>
+                            <Link to='/cart'>Cart</Link>
+                        </div>
+                        <div className='userProfile'>{user?.username}</div>
+                        <div className='profileButton'>
+                            <Link to='/profile'>Profile</Link>
+                        </div>
+                        <div className='logoutButton'>
+                            <p onClick={handleLogout}>Logout</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className='notLoggedInContainer'>
+                        <div className='signupButton'>
+                            <Link to='/signup'>Signup</Link>
+                        </div>
+                        <div className='loginButton'>
+                            <Link to='/login'>Login</Link>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Navbar;
