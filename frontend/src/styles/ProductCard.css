@@ -1,0 +1,50 @@
+.productCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--card-background);
+    margin: 1rem;
+    border-radius: 5px;
+    border-width: 3px;
+    border-color: yellow;
+    border-style:solid;
+    height: auto;
+    width: 250px;
+    box-shadow: 0px 0px 25px var(--card-highlight);
+
+    .productImage {
+        margin-top: 1rem;
+    }
+    
+    h3 {
+        display: flex;
+        text-align: left;
+        margin: 10px;
+        padding: 3px 3px 3px 10px;
+        border-radius: 2.5px;
+        height: 50px;
+        color: var(--card-headline);
+    }
+
+    .productDetails {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        p {
+            font-weight: 600;
+            margin-left: 0px;
+            margin-right: 10px;
+            padding: 0px;
+            text-align: left;
+            color: var(--card-paragraph);
+        }
+    }
+}
+
+.productCard:hover {
+    background-color: var(--button);
+    border-color: orange;
+    transition: 0.3s;
+    transform: scale(1.03);
+}
