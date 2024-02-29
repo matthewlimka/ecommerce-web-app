@@ -34,11 +34,11 @@ Technologies involved:
    - Perform integration testing with JUnit
    - Conduct unit testing with JUnit
 
-3. **Integrate Spring Security** (in progress)
+3. **Integrate Spring Security** (done)
    - Implement JWT for authentication and OAuth2 for authorization
    - Update backend tests to work with Spring Security
 
-4. **Basic Frontend UI Development**
+4. **Basic Frontend UI Development** (in progress)
    - Create login/registration pages for users
    - Develop home, products, orders & order history, payment pages
    - Design a shopping cart UI
