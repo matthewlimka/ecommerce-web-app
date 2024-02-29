@@ -1,0 +1,46 @@
+.page {
+    display: flex;
+    flex-direction: column; 
+    background-color: var(--background);
+    height: 100vh;
+
+    .pageContent {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        align-items: center;
+        justify-content: center;
+        height: auto;
+        min-height: 80vh;
+        width: 75%;
+        color: lightgray;
+    
+        h1 {
+            align-self: flex-start;
+            margin: 1rem 0 1rem 3.5rem;
+            color: var(--headline);
+        }
+    
+        .cardsContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 70vh;
+            width: 97%;
+            border-radius: 1rem;
+
+            h2 {
+                align-self: flex-start;
+                margin: 1rem 0 1rem 1.7rem;
+                font-size: xx-large;
+                color: var(--headline);
+            }
+    
+            .products {
+                display: flex;
+                flex-wrap: wrap;
+                margin-left: 2rem;
+            }
+        }
+    }
+}
