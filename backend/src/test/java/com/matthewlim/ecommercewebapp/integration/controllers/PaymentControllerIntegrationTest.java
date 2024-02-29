@@ -66,7 +66,7 @@ public class PaymentControllerIntegrationTest {
         
         Order order = new Order();
         order = orderRepo.save(order);
-        testPayment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(990.87), PaymentMethod.CreditCard_Mastercard, order);
+        testPayment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(990.87), PaymentMethod.CREDIT_CARD_MASTERCARD, order);
         testPayment = paymentRepo.save(testPayment);
     }
     
@@ -116,7 +116,7 @@ public class PaymentControllerIntegrationTest {
         Long paymentId = testPayment.getPaymentId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
         fieldsToUpdate.put("amount", BigDecimal.valueOf(1299.90));
-        fieldsToUpdate.put("paymentMethod", PaymentMethod.PayNow);
+        fieldsToUpdate.put("paymentMethod", PaymentMethod.PAYNOW);
         
         mockMvc.perform(patch("/api/v1/payments/{paymentId}", paymentId)
                 .contentType(MediaType.APPLICATION_JSON)

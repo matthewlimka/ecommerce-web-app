@@ -104,7 +104,7 @@ public class PaymentServiceUnitTest {
 	
 	@Test
 	public void testFindByPaymentMethod() {
-		PaymentMethod paymentMethod = PaymentMethod.CreditCard_Mastercard;
+		PaymentMethod paymentMethod = PaymentMethod.CREDIT_CARD_MASTERCARD;
 		Payment payment = new Payment();
 		payment.setPaymentMethod(paymentMethod);
 		List<Payment> paymentList = new ArrayList<Payment>(Arrays.asList(payment));
@@ -148,7 +148,7 @@ public class PaymentServiceUnitTest {
 		
 		Payment updatedPayment = new Payment();
 		updatedPayment.setAmount(BigDecimal.valueOf(89.20));
-		updatedPayment.setPaymentMethod(PaymentMethod.CreditCard_Visa);
+		updatedPayment.setPaymentMethod(PaymentMethod.CREDIT_CARD_VISA);
 		
 		when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(existingPayment));
 		when(paymentRepository.save(existingPayment)).thenReturn(updatedPayment);
@@ -168,7 +168,7 @@ public class PaymentServiceUnitTest {
 		
 		Map<String, Object> fieldsToUpdate = new HashMap<String, Object>();
 		fieldsToUpdate.put("amount", BigDecimal.valueOf(51.20));
-		fieldsToUpdate.put("paymentMethod", PaymentMethod.PayNow);
+		fieldsToUpdate.put("paymentMethod", PaymentMethod.PAYNOW);
 		
 		when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(existingPayment));
 		when(paymentRepository.save(existingPayment)).thenReturn(existingPayment);

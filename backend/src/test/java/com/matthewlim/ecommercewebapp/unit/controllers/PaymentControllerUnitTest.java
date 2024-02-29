@@ -103,7 +103,7 @@ public class PaymentControllerUnitTest {
 	@Test
 	@WithMockUser
 	public void testCreatePayment() throws Exception {
-		Payment payment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(20.0), PaymentMethod.CreditCard_Mastercard, new Order());
+		Payment payment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(20.0), PaymentMethod.CREDIT_CARD_MASTERCARD, new Order());
 		payment.setPaymentId(1L);
 		when(paymentService.addPayment(testPayment)).thenReturn(testPayment);
 		
@@ -122,7 +122,7 @@ public class PaymentControllerUnitTest {
 	@WithMockUser
 	public void testUpdatePayment() throws Exception {
         Long paymentId = testPayment.getPaymentId();
-        Payment updatedPayment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(129.28), PaymentMethod.CreditCard_Visa, new Order());
+        Payment updatedPayment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(129.28), PaymentMethod.CREDIT_CARD_VISA, new Order());
         when(paymentService.updatePayment(paymentId, testPayment)).thenReturn(updatedPayment);
         
         mockMvc.perform(put("/api/v1/payments/{paymentId}", paymentId)
@@ -138,7 +138,7 @@ public class PaymentControllerUnitTest {
         Long paymentId = testPayment.getPaymentId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
         fieldsToUpdate.put("amount", BigDecimal.valueOf(683.10));
-        fieldsToUpdate.put("paymentMethod", PaymentMethod.PayNow);
+        fieldsToUpdate.put("paymentMethod", PaymentMethod.PAYNOW);
 
         mockMvc.perform(patch("/api/v1/payments/{paymentId}", paymentId)
         	.with(csrf())

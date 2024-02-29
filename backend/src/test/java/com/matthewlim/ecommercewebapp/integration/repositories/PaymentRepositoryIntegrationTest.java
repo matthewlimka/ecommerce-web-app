@@ -74,7 +74,7 @@ public class PaymentRepositoryIntegrationTest {
     
     @Test
     public void testFindByPaymentMethod() {
-    	PaymentMethod paymentMethod = PaymentMethod.CreditCard_Mastercard;
+    	PaymentMethod paymentMethod = PaymentMethod.CREDIT_CARD_MASTERCARD;
         Payment payment = new Payment();
         payment.setPaymentMethod(paymentMethod);
         paymentRepository.save(payment);
