@@ -6,13 +6,16 @@ import { useAPI } from '../contexts/APIContext';
 import Searchbar from './Searchbar';
 
 const Navbar: React.FC = () => {
+    
     const location = useLocation();
     const { jwt, logout } = useAuth();
-    const { user, getUser } = useAPI();
+    const { user, getUser, logoutUser } = useAPI();
 
     useEffect(() => {
-        if (jwt !== null) {
+        if (jwt !== null && user === null) {
             getUser(jwt)
+        } else {
+            logoutUser()
         }
     }, [jwt])
 
