@@ -1,3 +1,23 @@
+:root {
+  --background: #232946;
+  --headline: #fffffe;
+  --paragraph: #b8c1ec;
+  --button: #eebbc3;
+  --button-text: #232946;
+
+  --card-background: #fffffe;
+  --card-headline: #232946;
+  --card-paragraph: #232946;
+  --card-highlight: #d4939d;
+  
+  --stroke: #121629;
+  --main: #b8c1ec;
+  --secondary: #fffffe;
+  --tertiary: #eebbc3;
+  --highlight: #eebbc3;
+
+}
+
 .App {
   text-align: center;
 }
