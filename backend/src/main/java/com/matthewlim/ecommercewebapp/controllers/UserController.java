@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,13 +29,13 @@ import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.UserService;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("api/v1")
 public class UserController {
 	
 	@Autowired
 	private UserService userService;
 
-	@GetMapping
+	@GetMapping("/users")
 	public List<User> getUsers(@RequestParam(required = false) String username, @RequestParam(required = false) String email, @RequestParam(required = false) Address address, @RequestParam(required = false) Order order) {
 		if ( username != null ) {
 			return new ArrayList<User>(Arrays.asList(userService.findByUsername(username)));
@@ -48,9 +50,15 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/{userId}")
-	public User getUser(@PathVariable Long userId) throws UserNotFoundException {
-		return userService.findByUserId(userId);
+	@GetMapping("/user")
+	public User getUser() throws UserNotFoundException, RuntimeException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(authentication.toString());
+		System.out.println("Credentials: " + authentication.getCredentials());
+		System.out.println("Principal: " + authentication.getPrincipal());
+		String username = authentication.getName();	
+		
+		return userService.findByUsername(username);
 	}
 	
 	@PostMapping
