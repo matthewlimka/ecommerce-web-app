@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -35,10 +36,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String jwt = authorizationHeader.substring(7);
             try {
                 Jwt jwtToken = jwtDecoder.decode(jwt);
-                String username = jwtToken.getSubject();
+                String subject = jwtToken.getSubject();
+                System.out.println("JWT subject: " + subject);
                 
                 // Create an Authentication object and set it in SecurityContext
-                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(subject, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException e) {
                 SecurityContextHolder.clearContext();
