@@ -1,32 +1,31 @@
 import { createContext, useContext, useState } from 'react';
+import User from '../models/User';
+import Product from '../models/Product';
+import Cart from '../models/Cart';
+import Order from '../models/Order';
 import axios from 'axios';
 
 type APIContextType = {
     user: User | null;
     getUser: (jwt: string) => void;
-    products: string[];
+    logoutUser: () => void;
+    products: Product[];
     getProducts: () => void;
-    cart: string[];
+    cart: Cart | null;
     getCart: (jwt: string) => void;
-    orders: string[];
+    orders: Order[];
     getOrders: (jwt: string) => void;
-    queryResults: string[];
+    queryResults: Product[];
     getQueryResults: (query: string) => void;
-}
-
-interface User {
-    username: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
 }
 
 const APIContext = createContext<APIContextType>({
     user: null,
     getUser: (jwt: string) => { },
+    logoutUser: () => { },
     products: [],
     getProducts: () => { },
-    cart: [],
+    cart: null,
     getCart: (jwt: string) => { },
     orders: [],
     getOrders: (jwt: string) => { },
@@ -36,12 +35,12 @@ const APIContext = createContext<APIContextType>({
 
 export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
-    const API = 'http://localhost:9001';
+    const API = 'http://localhost:9001/api/v1';
     const [user, setUser] = useState<User | null>(null);
-    const [products, setProducts] = useState<string[]>([]);
-    const [cart, setCart] = useState<string[]>([]);
-    const [orders, setOrders] = useState<string[]>([]);
-    const [queryResults, setQueryResults] = useState<string[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [cart, setCart] = useState<Cart | null>(null);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [queryResults, setQueryResults] = useState<Product[]>([]);
 
     const getUser = async (jwt: string) => {
         try {
@@ -50,6 +49,10 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const logoutUser = () => {
+        setUser(null)
     }
 
     const getProducts = async () => {
@@ -90,7 +93,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return (
         <APIContext.Provider value={{
-            user, getUser,
+            user, getUser, logoutUser,
             products, getProducts,
             cart, getCart,
             orders, getOrders,
