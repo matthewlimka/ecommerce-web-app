@@ -9,7 +9,7 @@ const LoginPage: React.FC = () => {
     const userRef = useRef<HTMLInputElement>(null);
     const API = "http://localhost:9001";
     const CLIENT_ID = "ae1c35b6915ac47d44c2";
-    const GITHUB_AUTHORIZATION_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`;
+    const GITHUB_AUTHORIZATION_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user:email`;
     const navigate = useNavigate();
 
     const [username, setUsername] = useState<string>("");
@@ -58,7 +58,7 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="page">
+        <div className="loginPage">
             <div className="loginSection">
                 <h1>Login</h1>
                 <div className="loginForm">
