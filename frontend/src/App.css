@@ -21,3 +21,11 @@
 .App {
   text-align: center;
 }
+
+.page {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  height: 100%;
+  min-height: 100%;
+}
