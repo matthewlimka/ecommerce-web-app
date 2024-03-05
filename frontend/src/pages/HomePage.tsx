@@ -14,21 +14,25 @@ const HomePage: React.FC = () => {
     return (
         <div className="page">
             <Navbar />
-            <div className="pageContent">
-                <h1>Welcome to ShoppersGate{user ? " " + user?.username : ""}!</h1>
-                <div className="cardsContainer">
+            <div className="home-page-content">
+                <h1>
+                    Welcome to ShoppersGate{user ? " " + user?.username : ""}!
+                </h1>
+                <div className="top-products-section">
                     <h2>Top Products</h2>
-                    <div className="products">
-                        {products.map((product, index) => {
-                            return (
-                                <ProductCard
-                                    productId={product.productId}
-                                    productName={product.productName}
-                                    price={product.price}
-                                    stockQuantity={product.stockQuantity}
-                                />
-                            );
-                        })}
+                    <div className="cards-container">
+                        <div className="product-cards">
+                            {products.map((product, index) => {
+                                return (
+                                    <ProductCard
+                                        productId={product.productId}
+                                        productName={product.productName}
+                                        price={product.price}
+                                        stockQuantity={product.stockQuantity}
+                                    />
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
