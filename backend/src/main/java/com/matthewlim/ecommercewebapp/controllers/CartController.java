@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,15 +27,19 @@ import com.matthewlim.ecommercewebapp.models.Cart;
 import com.matthewlim.ecommercewebapp.models.CartItem;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.CartService;
+import com.matthewlim.ecommercewebapp.services.UserService;
 
 @RestController
-@RequestMapping("api/v1/carts")
+@RequestMapping("api/v1")
 public class CartController {
 	
 	@Autowired
 	private CartService cartService;
+	
+	@Autowired
+	private UserService userService;
 
-	@GetMapping
+	@GetMapping("/carts")
 	public List<Cart> getCarts(@RequestParam(required = false) User user, @RequestParam(required = false) CartItem cartItem) {
 		if ( user!= null ) {
 			return new ArrayList<Cart>(Arrays.asList(cartService.findByUser(user)));
@@ -44,12 +50,15 @@ public class CartController {
 		}
 	}
 
-	@GetMapping("/{cartId}")
-	public Cart getCart(@PathVariable Long cartId) throws CartNotFoundException {
-		return cartService.findByCartId(cartId);
+	@GetMapping("/cart")
+	public Cart getCart() throws CartNotFoundException, RuntimeException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		
+		return cartService.findByUser(userService.findByUsername(username));
 	}
 	
-	@PostMapping
+	@PostMapping("/carts")
 	public ResponseEntity<Cart> createCart(@RequestBody Cart cart) {
 		Cart savedCart = cartService.addCart(cart);
 		URI location = ServletUriComponentsBuilder
@@ -61,17 +70,17 @@ public class CartController {
 		return ResponseEntity.created(location).body(savedCart);
 	}
 	
-	@PutMapping("/{cartId}")
+	@PutMapping("/cart/{cartId}")
 	public Cart updateCart(@PathVariable Long cartId, @RequestBody Cart updatedCart) {
 		return cartService.updateCart(cartId, updatedCart);
 	}
 	
-	@PatchMapping("/{cartId}")
+	@PatchMapping("/cart/{cartId}")
 	public Cart partialUpdateCart(@PathVariable Long cartId, @RequestBody Map<String, Object> fields) {
 		return cartService.partialUpdateCart(cartId, fields);
 	}
 	
-	@DeleteMapping("/{cartId}")
+	@DeleteMapping("/cart/{cartId}")
 	public void deleteCart(@PathVariable Long cartId) {
 		cartService.deleteCart(cartId);
 	}
