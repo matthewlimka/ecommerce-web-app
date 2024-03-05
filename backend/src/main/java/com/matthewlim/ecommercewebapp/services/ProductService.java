@@ -37,7 +37,11 @@ public class ProductService {
 	public List<Product> findByProductName(String productName) {
 		List<Product> products = productRepo.findByProductName(productName);
 		
-		logger.info("Successfully found " + products.size() + " product(s) with product name " + productName);
+		if (products.isEmpty()) {
+			logger.info("No product with product name " + productName + " found");
+		} else {
+			logger.info("Successfully found " + products.size() + " product(s) with product name " + productName);
+		}
 		return products;
 	}
 	
