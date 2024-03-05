@@ -61,7 +61,7 @@ public class UserController {
 		return userService.findByUsername(username);
 	}
 	
-	@PostMapping
+	@PostMapping("/users")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		User savedUser = userService.addUser(user);
 		URI location = ServletUriComponentsBuilder
@@ -73,17 +73,17 @@ public class UserController {
 		return ResponseEntity.created(location).body(savedUser);
 	}
 	
-	@PutMapping("/{userId}")
+	@PutMapping("/user/{userId}")
 	public User updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
 		return userService.updateUser(userId, updatedUser);
 	}
 	
-	@PatchMapping("/{userId}")
+	@PatchMapping("/user/{userId}")
 	public User partialUpdateUser(@PathVariable Long userId, @RequestBody Map<String, Object> fields) {
 		return userService.partialUpdateUser(userId, fields);
 	}
 	
-	@DeleteMapping("/{userId}")
+	@DeleteMapping("/user/{userId}")
 	public void deleteUser(@PathVariable Long userId) {
 		userService.deleteUser(userId);
 	}
