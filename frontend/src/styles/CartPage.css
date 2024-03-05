@@ -1,0 +1,26 @@
+.cart-page-content {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    height: 100%;
+    min-height: 80vh;
+    width: 70%;
+    margin-top: 15px;
+    padding: 25px 0 25px 0;
+    border-radius: 1rem;
+    background-color: var(--paragraph);
+    color: var(--background);
+
+    .cards-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
+        .cart-item-cards {
+            display: flex;
+            flex-wrap: wrap;
+            width: 1152px;
+        }
+    }
+}
