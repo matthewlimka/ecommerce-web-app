@@ -22,11 +22,11 @@ function App() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
-            <Route path="/products" element={<ProductPage />} />
-            <Route path="/orders" element={<OrderPage />} />
+            <Route path="/product/:productId" element={<ProductPage />} />
+            <Route path="/orders/:userId" element={<OrderPage />} />
             <Route path="/result" element={<ResultPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/cart/:userId" element={<CartPage />} />
+            <Route path="/profile/:userId" element={<ProfilePage />} />
           </Routes>
         </div>
       </APIProvider>
