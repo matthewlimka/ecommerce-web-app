@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +30,7 @@ public class OrderItem {
 	private int quantity;
 	private BigDecimal subtotal;
 	
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
