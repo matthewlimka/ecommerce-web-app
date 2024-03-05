@@ -5,6 +5,7 @@
     padding-left: 23rem;
     padding-right: 23rem;
     height: 65px;
+    min-height: 65px;
     background-color: var(--tertiary);
 
     .leftContainer {
@@ -13,14 +14,14 @@
         height: 100%;
         width: 60%;
 
-        :is(.homeContainer, .productContainer, .orderContainer) {
+        :is(.homeContainer, .productContainer, .cartContainer) {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100%;
         }
 
-        :is(.homeContainer, .productContainer, .orderContainer):hover {
+        :is(.homeContainer, .productContainer, .cartContainer):hover {
             background-color: var(--stroke);
             transition: 0.3s;
 
@@ -60,6 +61,11 @@
                 color: var(--headline);
             }
         }
+        
+        .cartContainer {
+            margin-left: 10px;
+            width: 65px;
+        }
     }
 
     .rightContainer {
@@ -67,18 +73,18 @@
         align-items: center;
         height: 100%;
 
-        :is(.cartButton, .profileButton, .logoutButton, .signupButton, .loginButton) {
+        :is(.cartButton, .accountContainer, .profileButton, .ordersButton, .logoutButton, .signupButton, .loginButton) {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100%;
         }
 
-        :is(.cartButton, .profileButton, .logoutButton, .signupButton, .loginButton):hover {
+        :is(.cartButton, .accountContainer, .profileButton, .ordersButton, .logoutButton, .signupButton, .loginButton):hover {
             background-color: var(--stroke);
             transition: 0.3s;
 
-            a {
+            a, p {
                 color: var(--headline);
             }
         }
@@ -88,7 +94,47 @@
             align-items: center;
             height: 100%;
 
-            .logoutButton:hover {
+            .accountContainer {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 65px;
+
+                .accountButton {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 65px;
+                }
+
+                :is(.profileButton, .ordersButton, .logoutButton) {
+                    height: 45px;
+                }
+
+                :is(.profileButton, .ordersButton, .logoutButton):hover {
+                    background-color: var(--tertiary);
+                    
+                    a, p {
+                        color: var(--stroke);
+                    }
+                }
+            }
+            
+            .accountDropdown {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                display: none;
+            }
+
+            .accountContainer:hover .accountDropdown {
+                display: flex;
+                flex-direction: column;
+                background-color: var(--stroke);
+            }
+
+            :is(.accountButton, .logoutButton):hover {
                 cursor: pointer;
             }
         }
