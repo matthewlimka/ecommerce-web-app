@@ -62,8 +62,14 @@ public class DataLoader implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		List<User> usersToSave = new ArrayList<>();
-		usersToSave.add(new User("user", passwordEncoder.encode("password"), "user@email.com", "user", "test", Role.USER, new ArrayList<Order>(), new Address(), new Cart()));
-		usersToSave.add(new User("admin", passwordEncoder.encode("password"), "admin@email.com", "admin", "test", Role.ADMIN, new ArrayList<Order>(), new Address(), new Cart()));
+		User user1 = new User("user", passwordEncoder.encode("password"), "user@email.com", "user", "test", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
+		User admin1 = new User("admin", passwordEncoder.encode("password"), "admin@email.com", "admin", "test", Role.ADMIN, new ArrayList<Order>(), new Address(), new Cart());
+		usersToSave.add(user1);
+		usersToSave.add(admin1);
+		for (User user : usersToSave) {
+			user.getAddress().setUser(user);
+			user.getCart().setUser(user);
+		}
 		userRepo.saveAll(usersToSave);
 		
 		List<Address> addressesToSave = new ArrayList<>();
