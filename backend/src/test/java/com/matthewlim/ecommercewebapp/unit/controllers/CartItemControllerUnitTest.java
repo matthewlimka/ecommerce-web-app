@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,7 +102,7 @@ public class CartItemControllerUnitTest {
 	@Test
 	@WithMockUser
 	public void testCreateCartItem() throws Exception {
-		CartItem cartItem = new CartItem(2, new Cart(), new Product());
+		CartItem cartItem = new CartItem(2, BigDecimal.valueOf(12.90), new Cart(), new Product());
 		cartItem.setCartItemId(1L);
 		when(cartItemService.addCartItem(testCartItem)).thenReturn(testCartItem);
 		
@@ -120,7 +121,7 @@ public class CartItemControllerUnitTest {
 	@WithMockUser
 	public void testUpdateCartItem() throws Exception {
         Long cartItemId = testCartItem.getCartItemId();
-        CartItem updatedCartItem = new CartItem(2, new Cart(), new Product());
+        CartItem updatedCartItem = new CartItem(2, BigDecimal.valueOf(12.90), new Cart(), new Product());
         when(cartItemService.updateCartItem(cartItemId, testCartItem)).thenReturn(updatedCartItem);
         
         mockMvc.perform(put("/api/v1/cartItems/{cartItemId}", cartItemId)
