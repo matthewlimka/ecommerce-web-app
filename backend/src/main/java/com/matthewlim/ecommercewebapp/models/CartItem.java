@@ -1,5 +1,7 @@
 package com.matthewlim.ecommercewebapp.models;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +28,7 @@ public class CartItem {
 	private Long cartItemId;
 	
 	private int quantity;
+	private BigDecimal subtotal;
 	
 	@JsonIgnore
 	@ManyToOne
@@ -36,9 +39,10 @@ public class CartItem {
 	@JoinColumn(name = "product_id")
 	private Product product;
 
-	public CartItem(int quantity, Cart cart, Product product) {
+	public CartItem(int quantity, BigDecimal subtotal, Cart cart, Product product) {
 		super();
 		this.quantity = quantity;
+		this.subtotal = subtotal;
 		this.cart = cart;
 		this.product = product;
 	}
