@@ -10,7 +10,7 @@ const ProductPage: React.FC = () => {
     const params = useParams<{ productId?: string }>();
     const productId: number = parseInt(params.productId!);
     const { jwt } = useAuth();
-    const { product, getProduct, addToCart } = useAPI();
+    const { user, product, getProduct, getCart, addToCart } = useAPI();
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
@@ -19,6 +19,12 @@ const ProductPage: React.FC = () => {
             getProduct(productId);
         }
     }, []);
+
+    useEffect(() => {
+        if (jwt !== null) {
+            getCart(jwt);
+        }
+    }, [jwt]);
 
     const decreaseQuantity = (event: any) => {
         event.preventDefault();
@@ -34,13 +40,13 @@ const ProductPage: React.FC = () => {
 
     const handleAddToCart = (event: any) => {
         event.preventDefault();
-        addToCart(jwt!, productId, quantity);
+        addToCart(jwt!, product!, quantity, quantity * product!.price);
     }
 
     const handleBuyNow = (event: any) => {
         event.preventDefault();
         handleAddToCart(event);
-        navigate('/cart');
+        navigate(`/cart${user?.userId}`);
     }
 
     return (
@@ -52,17 +58,17 @@ const ProductPage: React.FC = () => {
                 </div>
                 <div className="right-section">
                     <h1 className="product-name">{product?.productName}</h1>
-                    <h2 className="price">${product?.price}</h2>
+                    <h2 className="price">${product?.price.toFixed(2)}</h2>
                     <div className="quantity">
                         <h2>Quantity</h2>
-                        <button onClick={decreaseQuantity}>-</button>
+                        <button onClick={decreaseQuantity} className="product-page-quantity-button">-</button>
                         <span>{quantity}</span>
-                        <button onClick={increaseQuantity}>+</button>
+                        <button onClick={increaseQuantity} className="product-page-quantity-button">+</button>
                         <span>{product?.stockQuantity} available</span>
                     </div>
                     <div className="buttons-section">
-                        <button onClick={handleAddToCart}>Add to Cart</button>
-                        <button onClick={handleBuyNow}>Buy Now</button>
+                        <button onClick={handleAddToCart} className="product-page-action-button">Add to Cart</button>
+                        <button onClick={handleBuyNow} className="product-page-action-button">Buy Now</button>
                     </div>
                 </div>
             </div>
