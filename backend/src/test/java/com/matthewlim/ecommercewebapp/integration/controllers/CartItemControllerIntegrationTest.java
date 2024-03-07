@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +71,7 @@ public class CartItemControllerIntegrationTest {
         cart = cartRepo.save(cart);
         Product product = new Product();
         product = productRepo.save(product);
-        testCartItem = new CartItem(2, cart, product);
+        testCartItem = new CartItem(2, BigDecimal.valueOf(12.90), cart, product);
         testCartItem = cartItemRepo.save(testCartItem);
     }
     
