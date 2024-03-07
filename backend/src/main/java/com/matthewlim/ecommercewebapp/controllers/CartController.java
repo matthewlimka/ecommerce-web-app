@@ -26,6 +26,7 @@ import com.matthewlim.ecommercewebapp.exceptions.CartNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Cart;
 import com.matthewlim.ecommercewebapp.models.CartItem;
 import com.matthewlim.ecommercewebapp.models.User;
+import com.matthewlim.ecommercewebapp.services.CartItemService;
 import com.matthewlim.ecommercewebapp.services.CartService;
 import com.matthewlim.ecommercewebapp.services.UserService;
 
@@ -35,6 +36,9 @@ public class CartController {
 	
 	@Autowired
 	private CartService cartService;
+	
+	@Autowired
+	private CartItemService cartItemService;
 	
 	@Autowired
 	private UserService userService;
@@ -72,11 +76,23 @@ public class CartController {
 	
 	@PutMapping("/cart/{cartId}")
 	public Cart updateCart(@PathVariable Long cartId, @RequestBody Cart updatedCart) {
+		if (updatedCart.getCartItems().isEmpty()) {
+			cartItemService.deleteCartItemsByCart(updatedCart);
+		}
 		return cartService.updateCart(cartId, updatedCart);
 	}
 	
 	@PatchMapping("/cart/{cartId}")
 	public Cart partialUpdateCart(@PathVariable Long cartId, @RequestBody Map<String, Object> fields) {
+		// Delete existing cart items if cart items field is empty array
+		if (fields.containsKey("cartItems")) {
+			List<Map<String, Object>> cartItems = (List<Map<String, Object>>) fields.get("cartItems");
+			if (cartItems.isEmpty()) {
+				cartItemService.deleteCartItemsByCart(cartService.findByCartId(cartId));
+				// Add totalAmount field to update cart's totalAmount to $0.00
+				fields.put("totalAmount", 0);
+			}
+		}
 		return cartService.partialUpdateCart(cartId, fields);
 	}
 	
