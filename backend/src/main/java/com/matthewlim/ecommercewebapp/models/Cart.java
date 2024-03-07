@@ -1,5 +1,7 @@
 package com.matthewlim.ecommercewebapp.models;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -27,12 +29,14 @@ public class Cart {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long cartId;
 	
+	private BigDecimal totalAmount = BigDecimal.valueOf(0);
+	
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 	
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-	private List<CartItem> cartItems;
+	private List<CartItem> cartItems = new ArrayList<CartItem>();
 	
 	public Cart(User user, List<CartItem> cartItems) {
 		super();
