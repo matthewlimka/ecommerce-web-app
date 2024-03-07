@@ -10,7 +10,7 @@ const ProductCard = ({ productId, productName, price, stockQuantity }: Product) 
             </div>
             <h3 className="product-card-product-name">{productName}</h3>
             <div className="product-card-details">
-                <p className="product-card-details-price">${price}</p>
+                <p className="product-card-details-price">${price.toFixed(2)}</p>
                 <p className="product-card-details-stock-quantity">{stockQuantity} in stock</p>
             </div>
         </Link>
