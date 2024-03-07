@@ -1,6 +1,8 @@
 package com.matthewlim.ecommercewebapp.services;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.CartItemNotFoundException;
+import com.matthewlim.ecommercewebapp.exceptions.CartNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Cart;
 import com.matthewlim.ecommercewebapp.models.CartItem;
 import com.matthewlim.ecommercewebapp.models.Product;
 import com.matthewlim.ecommercewebapp.repositories.CartItemRepository;
+import com.matthewlim.ecommercewebapp.repositories.CartRepository;
 
 @Service
 public class CartItemService {
@@ -23,6 +27,9 @@ public class CartItemService {
 	
 	@Autowired
 	private CartItemRepository cartItemRepo;
+	
+	@Autowired
+	private CartRepository cartRepo;
 	
 	public CartItem findByCartItemId(Long cartItemId) {
 		CartItem cartItem = cartItemRepo.findById(cartItemId)
@@ -39,6 +46,13 @@ public class CartItemService {
 		List<CartItem> cartItems = cartItemRepo.findByQuantity(quantity);
 		
 		logger.info("Successfully found " + cartItems.size() + " cart item(s) with quantity " + quantity);
+		return cartItems;
+	}
+	
+	public List<CartItem> findBySubtotal(BigDecimal subtotal) {
+		List<CartItem> cartItems = cartItemRepo.findBySubtotal(subtotal);
+		
+		logger.info("Successfully found " + cartItems.size() + " cart item(s) with subtotal " + subtotal);
 		return cartItems;
 	}
 	
@@ -76,6 +90,7 @@ public class CartItemService {
 				});
 		
 		existingCartItem.setQuantity(updatedCartItem.getQuantity());
+		existingCartItem.setSubtotal(updatedCartItem.getSubtotal());
 		existingCartItem.setCart(updatedCartItem.getCart());
 		existingCartItem.setProduct(updatedCartItem.getProduct());
 		
@@ -90,11 +105,46 @@ public class CartItemService {
 					return new CartItemNotFoundException("No cart item with cart item ID " + cartItemId + " found");
 				});
 		
+		// Retrieve cart if there is a change in cart item quantity
+		Cart existingCart = null; 
+		if (fields.containsKey("quantity")) {
+			existingCart = cartRepo.findByCartItems(existingCartItem)
+				.orElseThrow(() -> {
+					logger.error("No cart with cart item ID " + cartItemId + " found");
+					return new CartNotFoundException("No cart with cart item ID " + cartItemId + " found");
+				});
+		}
+		
 		fields.forEach((key, value) -> {
 			Field field = ReflectionUtils.findField(CartItem.class, key);
 			field.setAccessible(true);
+			
+			if (field.getType() == BigDecimal.class && value instanceof Number) {
+				value = new BigDecimal(((Number) value).doubleValue());
+			}
+			
+			// Calculate and updated subtotal based on quantity if not provided 
+			if (key.equals("quantity") && !fields.containsKey("subtotal")) {
+				BigDecimal subtotal = BigDecimal.valueOf(((Integer) value).doubleValue() * existingCartItem.getProduct().getPrice().doubleValue());
+				subtotal.setScale(2, RoundingMode.HALF_UP);
+				existingCartItem.setSubtotal(subtotal);
+			}
+			
 			ReflectionUtils.setField(field, existingCartItem, value);
 		});
+		
+		// Calculate and update cart total amount if there is a change in cart item quantity
+		if (fields.containsKey("quantity")) {
+			BigDecimal updatedTotalAmount = BigDecimal.valueOf(0);
+			updatedTotalAmount.setScale(2, RoundingMode.HALF_UP);
+			
+			for (CartItem cartItem : existingCart.getCartItems()) {
+				updatedTotalAmount = updatedTotalAmount.add(cartItem.getSubtotal());
+			}
+			existingCart.setTotalAmount(updatedTotalAmount);
+			logger.info("Updated total amount for cart ID " + existingCart.getCartId());
+			cartRepo.save(existingCart);
+		}
 		
 		logger.info("Successfully updated cart item with cart item ID " + cartItemId);
 		return cartItemRepo.save(existingCartItem);
@@ -109,5 +159,10 @@ public class CartItemService {
 		
 		logger.info("Successfully deleted cart item with cart item ID " + cartItemId);
 		cartItemRepo.delete(existingCartItem);
+	}
+	
+	public void deleteCartItemsByCart(Cart cart) {
+		logger.info("Successfully deleted cart items with cart ID " + cart.getCartId());
+		cartItemRepo.deleteByCart(cart);
 	}
 }
