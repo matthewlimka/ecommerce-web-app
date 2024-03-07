@@ -1,6 +1,8 @@
 package com.matthewlim.ecommercewebapp.services;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,13 @@ public class CartService {
 		return cart;
 	}
 	
+	public List<Cart> findByTotalAmount(BigDecimal totalAmount) {
+		List<Cart> carts = cartRepo.findByTotalAmount(totalAmount);
+		
+		logger.info("Successfully found " + carts.size() + " cart(s) with total amount " + totalAmount);
+		return carts;
+	}
+	
 	public Cart findByUser(User user) {
 		Cart cart = cartRepo.findByUser(user)
 				.orElseThrow(() -> {
@@ -88,6 +97,7 @@ public class CartService {
 					return new CartNotFoundException("No cart with cart ID " + cartId + " found");
 				});
 		
+		existingCart.setTotalAmount(updatedCart.getTotalAmount());
 		existingCart.setUser(updatedCart.getUser());
 		existingCart.setCartItems(updatedCart.getCartItems());
 		
@@ -104,15 +114,19 @@ public class CartService {
 		
 		fields.forEach((key, value) -> {
 			if (key.equals("cartItems")) {
-				logger.info("Cart items field branch");
+				// Updating cartItems field
+				logger.info("Updating cartItems field...");
 				if (value instanceof List) {
 					List<Map<String, Object>> cartItems = (List<Map<String, Object>>) value;
 					List<CartItem> cartItemListToSave = new ArrayList<CartItem>();
+					
+					// Updating each cartItem in cartItems field
 					for (Map<String, Object> cartItem : cartItems) {
+						// Replacing productId in cartItem's product field with Product object
 						// Find existing product from database
 						Product product = null;
 						if (cartItem.containsKey("product")) {
-							logger.info("Product field found");
+							logger.info("cartItems - product field found");
 							Integer productId = (Integer) cartItem.get("product");
 							product = productRepo.findById(productId.longValue())
 									.orElseThrow(() -> {
@@ -121,47 +135,76 @@ public class CartService {
 									});
 						}
 						
+						// Updating cart item
 						// Find existing cart item from database if any
 						CartItem cartItemToSave = null;
 						if (cartItem.containsKey("cartItemId")) {
-							logger.info("Cart item id field found");
+							// Cart item ID provided
+							// Update existing cart item
+							logger.info("cartItems - cartItemId field found");
 							Integer cartItemId = (Integer) cartItem.get("cartItemId");
 							cartItemToSave = cartItemRepo.findById(cartItemId.longValue())
 									.orElseThrow(() -> {
 										logger.error("No cart item with cart item ID " + cartItem.get("cartItemId") + " found");
 										return new CartItemNotFoundException("No cart item with cart item ID " + cartItem.get("cartItemId") + " found");
 									});
+							
+							BigDecimal subtotal = BigDecimal.valueOf((Double) cartItem.get("subtotal"));
+							subtotal.setScale(2, RoundingMode.HALF_UP);
+							
 							cartItemToSave.setCart(existingCart);
 							cartItemToSave.setProduct(product);
 							cartItemToSave.setQuantity((Integer) cartItem.get("quantity"));
+							cartItemToSave.setSubtotal(subtotal);
 						} else {
-							// Check if any existing cart items are for the same product
-							logger.info("No cart item id field found");
-
+							// No cart item ID provided
+							// Check if cart contains any existing cart items with the same product
+							logger.info("cartItems - no cartItemId field found");
 							List<CartItem> existingCartItems = cartItemRepo.findByCart(existingCart);
 							boolean existingCartItemWithSameProduct = false;
+
+							// Existing cart item with the same product
 							for (CartItem existingCartItem : existingCartItems) {
 								if (existingCartItem.getProduct().getProductId() == product.getProductId()) {
+									// Add quantity and subtotal to existing cart item
 									logger.info("Existing cart item with product id " + product.getProductId() + " found");
 									cartItemToSave = existingCartItem;
+									
+									BigDecimal subtotal = BigDecimal.valueOf((Double) cartItem.get("subtotal"));
+									subtotal.setScale(2, RoundingMode.HALF_UP);
+									
 									cartItemToSave.setQuantity(existingCartItem.getQuantity() + (Integer) cartItem.get("quantity"));
+									cartItemToSave.setSubtotal(existingCartItem.getSubtotal().add(subtotal));
 									existingCartItemWithSameProduct = true;
 								}
 							}
-							
+								
+							// No existing cart item with the same product
 							if (!existingCartItemWithSameProduct) {
+								// Create new cart item for the product
 								logger.info("No existing cart item with product id " + product.getProductId());
-								cartItemToSave = new CartItem((Integer) cartItem.get("quantity"), existingCart, product);
+								BigDecimal subtotal = BigDecimal.valueOf((Double) cartItem.get("subtotal"));
+								subtotal.setScale(2, RoundingMode.HALF_UP);
+								
+								cartItemToSave = new CartItem((Integer) cartItem.get("quantity"), subtotal, existingCart, product);
 							}
 						}
+						// Add updated cart item to list of cart items to save
 						cartItemListToSave.add(cartItemToSave);
 					}
+					// Update cart items field with updated cart items
 					existingCart.setCartItems(cartItemListToSave);
 				}	
 			} else {
-				logger.info("Other fields branch");
+				// Updating non-cartItems fields
+				logger.info("Updating non-cartItems fields...");
 				Field field = ReflectionUtils.findField(Cart.class, key);
 				field.setAccessible(true);
+				
+				if (field.getType() == BigDecimal.class && value instanceof Number) {
+					value = new BigDecimal(((Number) value).doubleValue());
+				}
+				
 				ReflectionUtils.setField(field, existingCart, value);
 			}
 		});
