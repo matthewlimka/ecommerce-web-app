@@ -11,6 +11,8 @@ import OrderPage from './pages/OrderPage';
 import ResultPage from './pages/ResultPage';
 import CartPage from './pages/CartPage';
 import ProfilePage from './pages/ProfilePage';
+import CheckoutPage from './pages/CheckoutPage';
+import PaymentPage from './pages/PaymentPage';
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
             <Route path="/result" element={<ResultPage />} />
             <Route path="/cart/:userId" element={<CartPage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment" element={<PaymentPage />} />
           </Routes>
         </div>
       </APIProvider>
