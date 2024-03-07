@@ -2,11 +2,10 @@ import Order from './Order';
 import Product from './Product';
 
 interface OrderItem {
-    orderItemId: number;
+    orderItemId?: number;
     quantity: number;
     subtotal: number;
-    order: Order;
-    price: number;
+    orderId?: number;
     product: Product;
 }
 
