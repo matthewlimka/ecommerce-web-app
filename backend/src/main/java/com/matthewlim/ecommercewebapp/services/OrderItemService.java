@@ -2,6 +2,7 @@ package com.matthewlim.ecommercewebapp.services;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -105,6 +106,12 @@ public class OrderItemService {
 			
 			if (field.getType() == BigDecimal.class && value instanceof Number) {
 				value = new BigDecimal(((Number) value).doubleValue());
+			}
+			
+			if (key.equals("quantity") && !fields.containsKey("subtotal")) {
+				BigDecimal subtotal = BigDecimal.valueOf(((Integer) value).doubleValue() * existingOrderItem.getProduct().getPrice().doubleValue());
+				subtotal.setScale(2, RoundingMode.HALF_UP);
+				existingOrderItem.setSubtotal(subtotal);
 			}
 			
 			ReflectionUtils.setField(field, existingOrderItem, value);
