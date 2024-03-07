@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +31,7 @@ import com.matthewlim.ecommercewebapp.models.OrderItem;
 import com.matthewlim.ecommercewebapp.models.Payment;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.OrderService;
+import com.matthewlim.ecommercewebapp.services.UserService;
 
 @RestController
 @RequestMapping("api/v1/orders")
@@ -36,6 +39,9 @@ public class OrderController {
 	
 	@Autowired
 	private OrderService orderService;
+	
+	@Autowired
+	private UserService userService;
 
 	@GetMapping
 	public List<Order> getOrders(@RequestParam(required = false) LocalDateTime orderDate, @RequestParam(required = false) BigDecimal totalAmount, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) User user, @RequestParam(required = false) OrderItem orderItem, @RequestParam(required = false) Payment payment) {
@@ -63,7 +69,12 @@ public class OrderController {
 	
 	@PostMapping
 	public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-		Order savedOrder = orderService.addOrder(order);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		User user = userService.findByUsername(username);
+		Order incomingOrder = order;
+		incomingOrder.setUser(user);
+		Order savedOrder = orderService.addOrder(incomingOrder);
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
 				.path("/{id}")
@@ -75,7 +86,12 @@ public class OrderController {
 	
 	@PutMapping("/{orderId}")
 	public Order updateOrder(@PathVariable Long orderId, @RequestBody Order updatedOrder) {
-		return orderService.updateOrder(orderId, updatedOrder);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		User user = userService.findByUsername(username);
+		Order incomingOrder = updatedOrder;
+		incomingOrder.setUser(user);
+		return orderService.updateOrder(orderId, incomingOrder);
 	}
 	
 	@PatchMapping("/{orderId}")
