@@ -5,6 +5,8 @@ import Product from "../models/Product";
 import Cart from "../models/Cart";
 import CartItem from "../models/CartItem";
 import Order from "../models/Order";
+import OrderItem from "../models/OrderItem";
+import OrderStatus from "../enums/OrderStatus";
 import axios from "axios";
 
 type APIContextType = {
@@ -17,10 +19,17 @@ type APIContextType = {
     getProducts: () => void;
     cart: Cart | null;
     getCart: (jwt: string) => void;
-    addToCart: (jwt: string, productId: number, quantity: number) => void;
+    addToCart: (jwt: string, product: Product, quantity: number, subtotal: number) => void;
     removeFromCart: (jwt: string, productId: number) => void;
-    orders: Order[];
-    getOrders: (jwt: string) => void;
+    updateCartItem: (jwt: string, cartItemId: number, quantity: number) => void;
+    clearCart: (jwt: string) => void;
+    checkoutOrder: Order | null;
+    userOrders: Order[];
+    getUserOrders: (jwt: string) => void;
+    getCheckoutOrder: (jwt: string, orderId: number) => void;
+    createCheckoutOrder: (jwt: string) => void;
+    placeOrder: (jwt: string) => void;
+    updateOrderItem: (jwt: string, orderItemId: number, quantity: number) => void;
     queryResults: Product[];
     getQueryResults: (query: string) => void;
 };
@@ -35,10 +44,17 @@ const APIContext = createContext<APIContextType>({
     getProducts: () => {},
     cart: null,
     getCart: (jwt: string) => {},
-    addToCart: (jwt: string, productId: number, quantity: number) => {},
+    addToCart: (jwt: string, product: Product, quantity: number, subtotal: number) => {},
     removeFromCart: (jwt: string, productId: number) => {},
-    orders: [],
-    getOrders: (jwt: string) => {},
+    updateCartItem: (jwt: string, cartItemId: number, quantity: number) => {},
+    clearCart: (jwt: string) => {},
+    checkoutOrder: null,
+    userOrders: [],
+    getUserOrders: (jwt: string) => {},
+    getCheckoutOrder: (jwt: string, orderId: number) => {},
+    createCheckoutOrder: (jwt: string) => {},
+    placeOrder: (jwt: string) => {},
+    updateOrderItem: (jwt: string, orderItemId: number, quantity: number) => {},
     queryResults: [],
     getQueryResults: (query: string) => {},
 });
@@ -49,7 +65,8 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const [product, setProduct] = useState<Product | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [cart, setCart] = useState<Cart | null>(null);
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [checkoutOrder, setCheckoutOrder] = useState<Order | null>(null);
+    const [userOrders, setUserOrders] = useState<Order[]>([]);
     const [queryResults, setQueryResults] = useState<Product[]>([]);
 
     const getUser = async (jwt: string) => {
@@ -88,84 +105,176 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const getCart = async (jwt: string) => {
         try {
             const response = await axios.get(`${API}/cart`, { headers: { Authorization: `Bearer ${jwt}` } });
-            setCart(response.data);
+            setCart(FormatUtils.formatCart(response.data));
         } catch (error) {
             console.log(error);
         }
     };
 
-    const addToCart = async (jwt: string, productId: number, quantity: number) => {
-        getCart(jwt);
-        console.log(cart);
-
+    const addToCart = async (jwt: string, product: Product, quantity: number, subtotal: number) => {
         interface CartItemDTO {
+            cartItemId?: number;
             quantity: number;
+            subtotal: number;
+            cartId: number;
             product: number;
         }
         let cartItemsToSave: CartItemDTO[] = [];
 
-        if (cart !== null) {
-            try {
-                const cartItem = cart.cartItems.find((item) => item.product.productId === productId);
-                if (cartItem) {
-                    cartItem.quantity += quantity;
-                    const newCartItemToSave: CartItemDTO = {
-                        quantity: cartItem.quantity += quantity,
-                        product: productId
-                    }
-                    cartItemsToSave.push(newCartItemToSave);
-                } else {
-                    await getProduct(productId);
-                    if (product) {
-                        const newCartItem: CartItem = {
-                            quantity,
-                            cartId: cart.cartId,
-                            product
-                        };
-                        const newCartItemToSave: CartItemDTO = {
-                            quantity,
-                            product: productId
-                        }
-                        cart.cartItems.push(newCartItem);
-                        cartItemsToSave.push(newCartItemToSave);
-                    }
-                }
-                await axios.patch(`${API}/cart/${cart.cartId}`, JSON.stringify({ cartItems: cartItemsToSave }), { headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' } });
-            } catch (error) {
-                console.log(error);
+        try {
+            // Check if the product is already in the cart 
+            const cartItem = cart!.cartItems.find((item) => item.product.productId === product.productId);
+            if (cartItem) {
+                // Update the quantity of the cart item
+                cartItem.quantity += quantity;
+                cartItem.subtotal += subtotal;
+            } else {
+                // Create a new cart item
+                const newCartItem: CartItem = {
+                    quantity: quantity,
+                    subtotal: parseFloat(subtotal.toFixed(2)),
+                    cartId: cart!.cartId,
+                    product: product
+                };
+                // Add the new cart item to the cart's cartItems array
+                cart!.cartItems.push(newCartItem);
             }
+
+            // Convert the cartItems to a DTO
+            cartItemsToSave = cart!.cartItems.map((cartItem) => {
+                return {
+                    cartItemId: cartItem.cartItemId,
+                    quantity: cartItem.quantity,
+                    subtotal: parseFloat(cartItem.subtotal.toFixed(2)),
+                    cartId: cartItem.cartId,
+                    product: cartItem.product.productId
+                }
+            });
+            console.log('Cart items to save');
+            console.log(cartItemsToSave);
+            
+            cart!.totalAmount = cart!.cartItems.reduce((total, item) => total + item.subtotal, 0);
+            cart!.totalAmount = parseFloat(cart!.totalAmount.toFixed(2));
+
+            // Send the updated list of cartItems in the cart
+            const response = await axios.patch(`${API}/cart/${cart!.cartId}`, { totalAmount: cart!.totalAmount, cartItems: cartItemsToSave }, { headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' } });
+            setCart(FormatUtils.formatCart(response.data));
+        } catch (error) {
+            console.log(error);
         }
     };
             
     const removeFromCart = async (jwt: string, productId: number) => {
-        getCart(jwt);
-
-        if (cart !== null) {
-            try {
-                const index = cart.cartItems.findIndex((item) => item.product.productId === productId);
-                if (index !== -1) {
-                    cart.cartItems.splice(index, 1);
-                }
-                await axios.put(`${API}/cart/${cart.cartId}`, { cartItems: cart.cartItems }, { headers: { Authorization: `Bearer ${jwt}` } });
-            } catch (error) {
-                console.log(error);
+        try {
+            const index = cart!.cartItems.findIndex((item) => item.product.productId === productId);
+            if (index !== -1) {
+                cart!.cartItems.splice(index, 1);
             }
+            const response = await axios.put(`${API}/cart/${cart!.cartId}`, { cartItems: cart!.cartItems }, { headers: { Authorization: `Bearer ${jwt}` } });
+            setCart(FormatUtils.formatCart(response.data));
+        } catch (error) {
+            console.log(error);
         }
     };
 
-    const getOrders = async (jwt: string) => {
+    const updateCartItem = async (jwt: string, cartItemId: number, quantity: number) => {
+        try {
+            const response = await axios.patch(`${API}/cartItems/${cartItemId}`, { quantity: quantity }, { headers: { Authorization: `Bearer ${jwt}` } });
+            console.log('Updated cart item');
+            console.log(response.data);
+            getCart(jwt!)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const clearCart = async (jwt: string) => {
+        try {
+            const response = await axios.patch(`${API}/cart/${cart!.cartId}`, { cartItems: [] }, { headers: { Authorization: `Bearer ${jwt}` } });
+            setCart(FormatUtils.formatCart(response.data));
+            console.log('Cleared cart');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getUserOrders = async (jwt: string) => {
         try {
             const response = await axios.get(`${API}/orders`, { headers: { Authorization: `Bearer ${jwt}` } });
-                setOrders(response.data);
+                setUserOrders(
+                    response.data.map((order: Order) => FormatUtils.formatOrder(order))
+                );
             } catch (error) {
                 console.log(error);
             }
     };
+
+    const getCheckoutOrder = async (jwt: string, orderId: number) => {
+        try {
+            const response = await axios.get(`${API}/orders/${orderId}`, { headers: { Authorization: `Bearer ${jwt}` } });
+            setCheckoutOrder(FormatUtils.formatOrder(response.data));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const createCheckoutOrder = async (jwt: string) => {
+        const convertCartItemsToOrderItems = (cartItems: CartItem[]): OrderItem[] => {
+            return cartItems.map((cartItem) => {
+                return {
+                    quantity: cartItem.quantity,
+                    subtotal: cartItem.subtotal,
+                    product: cartItem.product
+                }
+            });
+        };
+        
+        let orderItems: OrderItem[] = convertCartItemsToOrderItems(cart!.cartItems);
+        let order: Order = {
+            orderDate: new Date(),
+            totalAmount: orderItems.reduce((total, item) => total + item.subtotal, 0),
+            orderStatus: OrderStatus.PENDING,
+            orderItems
+        };
+
+        const response = await axios.post(`${API}/orders`, { orderDate: order.orderDate, totalAmount: order.totalAmount, orderStatus: order.orderStatus, orderItems: order.orderItems }, { headers: { Authorization: `Bearer ${jwt}` } });
+        setCheckoutOrder(FormatUtils.formatOrder(response.data));
+        console.log('Created checkout order');
+        console.log(response.data);
+    };
+
+    const placeOrder = async (jwt: string) => {
+        try {
+            console.log('Order before being placed');
+            console.log(checkoutOrder);
+
+            const response = await axios.put(`${API}/orders/${checkoutOrder!.orderId}`, { orderDate: checkoutOrder!.orderDate, totalAmount: checkoutOrder!.totalAmount, orderStatus: checkoutOrder!.orderStatus, orderItems: checkoutOrder!.orderItems }, { headers: { Authorization: `Bearer ${jwt}` } });
+            setCheckoutOrder(FormatUtils.formatOrder(response.data));
+            console.log('Order after being placed');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateOrderItem = async (jwt: string, orderItemId: number, quantity: number) => {
+        try {
+            const response = await axios.patch(`${API}/orderItems/${orderItemId}`, { quantity: quantity }, { headers: { Authorization: `Bearer ${jwt}` } });
+            console.log('Updated order item');
+            console.log(response.data);
+            getCheckoutOrder(jwt!, checkoutOrder!.orderId!);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const getQueryResults = async (query: string) => {
         try {
             const response = await axios.get(`${API}/products?productName=${query}`);
-                setQueryResults(response.data);
+                setQueryResults(
+                    response.data.map((product: Product) => FormatUtils.formatProduct(product))
+                );
             } catch (error) {
                 console.log(error);
             }
@@ -175,8 +284,8 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         <APIContext.Provider value={{
             user, getUser, logoutUser,
             product, products, getProduct, getProducts,
-            cart, getCart, addToCart, removeFromCart,
-            orders, getOrders,
+            cart, getCart, addToCart, removeFromCart, updateCartItem, clearCart,
+            checkoutOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, placeOrder, updateOrderItem,
             queryResults, getQueryResults,
         }}>
             {children}
