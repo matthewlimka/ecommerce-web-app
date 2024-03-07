@@ -4,13 +4,13 @@ import OrderItem from './OrderItem';
 import Payment from './Payment';
 
 interface Order {
-    orderId: number;
+    orderId?: number;
     orderDate: Date;
     totalAmount: number;
     orderStatus: OrderStatus;
-    user: User;
+    user?: User;
     orderItems: OrderItem[];
-    payment: Payment;
+    payment?: Payment;
 }
 
 export default Order;
