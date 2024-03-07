@@ -101,8 +101,13 @@ public class OrderService {
 	}
 	
 	public Order addOrder(Order order) {
-		logger.info("Successfully registered new order with order ID " + order.getOrderId());
-		return orderRepo.save(order);
+		Order updatedOrder = order;
+		for (OrderItem orderItem: order.getOrderItems()) {
+			orderItem.setOrder(updatedOrder);
+		}
+		Order savedOrder = orderRepo.save(updatedOrder);
+		logger.info("Successfully registered new order with order ID " + savedOrder.getOrderId());
+		return savedOrder;
 	}
 	
 	public Order updateOrder(Long orderId, Order updatedOrder) {
@@ -117,7 +122,11 @@ public class OrderService {
 		existingOrder.setOrderStatus(updatedOrder.getOrderStatus());
 		existingOrder.setUser(updatedOrder.getUser());
 		existingOrder.setOrderItems(updatedOrder.getOrderItems());
-		existingOrder.setPayment(updatedOrder.getPayment());		
+		existingOrder.setPayment(updatedOrder.getPayment());
+		
+		for (OrderItem orderItem: existingOrder.getOrderItems()) {
+			orderItem.setOrder(existingOrder);
+		}
 		
 		logger.info("Successfully updated order with order ID " + orderId);
 		return orderRepo.save(existingOrder);
