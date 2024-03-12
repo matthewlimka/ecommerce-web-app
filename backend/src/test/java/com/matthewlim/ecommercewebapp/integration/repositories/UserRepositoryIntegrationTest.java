@@ -51,14 +51,14 @@ public class UserRepositoryIntegrationTest {
     }
 
     @Test
-    public void testFindByAddress() {
-        Address address = new Address();
+    public void testFindByShippingAddress() {
+        Address shippingAddress = new Address();
         User user = new User();
-        user.setAddress(address);
-        address.setUser(user);
+        user.setShippingAddress(shippingAddress);
+        shippingAddress.setUser(user);
         userRepository.save(user);
 
-        Optional<User> result = userRepository.findByAddress(address);
+        Optional<User> result = userRepository.findByShippingAddress(shippingAddress);
 
         assertTrue(result.isPresent());
         assertEquals(user, result.get());
