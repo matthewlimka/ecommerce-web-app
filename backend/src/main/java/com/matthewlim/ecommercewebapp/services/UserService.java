@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import com.matthewlim.ecommercewebapp.enums.OrderStatus;
+import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
 import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
 import com.matthewlim.ecommercewebapp.models.Order;
@@ -75,14 +77,14 @@ public class UserService implements UserDetailsService {
 		return user;
 	}
 	
-	public User findByAddress(Address address) {
-		User user = userRepo.findByAddress(address)
+	public User findByShippingAddress(Address shippingAddress) {
+		User user = userRepo.findByShippingAddress(shippingAddress)
 				.orElseThrow(() -> {
-					logger.error("No user with address " + address + " found");
-					return new UserNotFoundException("No user with address " + address + " found");
+					logger.error("No user with shipping address " + shippingAddress + " found");
+					return new UserNotFoundException("No user with shipping address " + shippingAddress + " found");
 				});
 		
-		logger.info("Successfully found user with address " + address);
+		logger.info("Successfully found user with shipping address " + shippingAddress);
 		return user;
 	}
 	
@@ -121,8 +123,9 @@ public class UserService implements UserDetailsService {
 		existingUser.setEmail(updatedUser.getEmail());
 		existingUser.setFirstName(updatedUser.getFirstName());
 		existingUser.setLastName(updatedUser.getLastName());
+//		existingUser.setRegisteredPaymentMethods(updatedUser.getRegisteredPaymentMethods());
 		existingUser.setOrders(updatedUser.getOrders());
-		existingUser.setAddress(updatedUser.getAddress());
+		existingUser.setShippingAddress(updatedUser.getShippingAddress());
 		existingUser.setCart(updatedUser.getCart());
 		
 		logger.info("Successfully updated user with user ID " + userId);
@@ -139,6 +142,12 @@ public class UserService implements UserDetailsService {
 		fields.forEach((key, value) -> {
 			Field field = ReflectionUtils.findField(User.class, key);
 			field.setAccessible(true);
+			
+//			if (key.equals("registeredPaymentMethods") && value instanceof List) {
+//				List<PaymentMethod> registeredPaymentMethods = (List<PaymentMethod>) value;
+//				value = registeredPaymentMethods;
+//			}
+			
 			ReflectionUtils.setField(field, existingUser, value);
 		});
 		
