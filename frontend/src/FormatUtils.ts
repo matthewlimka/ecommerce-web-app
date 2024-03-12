@@ -30,6 +30,7 @@ const FormatUtils = {
     formatOrder(order: Order) {
         return {
             ...order,
+            orderDate: new Date(order.orderDate),
             totalAmount: parseFloat(order.totalAmount.toFixed(2)),
             orderItems: order.orderItems.map(this.formatOrderItem),
         }
