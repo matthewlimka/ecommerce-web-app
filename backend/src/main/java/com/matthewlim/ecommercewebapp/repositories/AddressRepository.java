@@ -12,7 +12,7 @@ import com.matthewlim.ecommercewebapp.models.User;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
-	List<Address> findByStreet(String street);
+	List<Address> findByStreetAddress(String streetAddress);
 	List<Address> findByCity(String city);
 	List<Address> findByState(String state);
 	List<Address> findByPostalCode(String postalCode);
