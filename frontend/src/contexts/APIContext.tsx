@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import FormatUtils from "../FormatUtils";
+import PaymentMethod from "../enums/PaymentMethod";
 import User from "../models/User";
 import Product from "../models/Product";
 import Cart from "../models/Cart";
@@ -7,6 +8,7 @@ import CartItem from "../models/CartItem";
 import Order from "../models/Order";
 import OrderItem from "../models/OrderItem";
 import OrderStatus from "../enums/OrderStatus";
+import Payment from "../models/Payment";
 import axios from "axios";
 
 type APIContextType = {
@@ -24,11 +26,13 @@ type APIContextType = {
     updateCartItem: (jwt: string, cartItemId: number, quantity: number) => void;
     clearCart: (jwt: string) => void;
     checkoutOrder: Order | null;
+    placedOrder: Order | null;
     userOrders: Order[];
     getUserOrders: (jwt: string) => void;
     getCheckoutOrder: (jwt: string, orderId: number) => void;
+    getPlacedOrder(jwt: string): void;
     createCheckoutOrder: (jwt: string) => void;
-    placeOrder: (jwt: string) => void;
+    placeOrder: (jwt: string, selectedPaymentMethod: PaymentMethod) => void;
     updateOrderItem: (jwt: string, orderItemId: number, quantity: number) => void;
     queryResults: Product[];
     getQueryResults: (query: string) => void;
@@ -49,11 +53,13 @@ const APIContext = createContext<APIContextType>({
     updateCartItem: (jwt: string, cartItemId: number, quantity: number) => {},
     clearCart: (jwt: string) => {},
     checkoutOrder: null,
+    placedOrder: null,
     userOrders: [],
     getUserOrders: (jwt: string) => {},
     getCheckoutOrder: (jwt: string, orderId: number) => {},
+    getPlacedOrder: (jwt: string) => {},
     createCheckoutOrder: (jwt: string) => {},
-    placeOrder: (jwt: string) => {},
+    placeOrder: (jwt: string, selectedPaymentMethod: PaymentMethod) => {},
     updateOrderItem: (jwt: string, orderItemId: number, quantity: number) => {},
     queryResults: [],
     getQueryResults: (query: string) => {},
@@ -66,6 +72,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const [products, setProducts] = useState<Product[]>([]);
     const [cart, setCart] = useState<Cart | null>(null);
     const [checkoutOrder, setCheckoutOrder] = useState<Order | null>(null);
+    const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
     const [userOrders, setUserOrders] = useState<Order[]>([]);
     const [queryResults, setQueryResults] = useState<Product[]>([]);
 
@@ -244,12 +251,30 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         console.log(response.data);
     };
 
-    const placeOrder = async (jwt: string) => {
+    const getPlacedOrder = async (jwt: string) => {
+        try {
+            const response = await axios.get(`${API}/orders/${checkoutOrder!.orderId}`, { headers: { Authorization: `Bearer ${jwt}` } });
+            setPlacedOrder(FormatUtils.formatOrder(response.data));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const placeOrder = async (jwt: string, selectedPaymentMethod: PaymentMethod) => {
         try {
             console.log('Order before being placed');
             console.log(checkoutOrder);
 
-            const response = await axios.put(`${API}/orders/${checkoutOrder!.orderId}`, { orderDate: checkoutOrder!.orderDate, totalAmount: checkoutOrder!.totalAmount, orderStatus: checkoutOrder!.orderStatus, orderItems: checkoutOrder!.orderItems }, { headers: { Authorization: `Bearer ${jwt}` } });
+            console.log('Selected payment method: ' + selectedPaymentMethod);
+            let payment: Payment = {
+                paymentMethod: selectedPaymentMethod,
+                amount: checkoutOrder!.totalAmount,
+                paymentDate: new Date()
+            }
+            checkoutOrder!.payment = payment;
+            checkoutOrder!.orderStatus = OrderStatus.PROCESSING;
+
+            const response = await axios.put(`${API}/orders/${checkoutOrder!.orderId}`, { orderDate: checkoutOrder!.orderDate, totalAmount: checkoutOrder!.totalAmount, orderStatus: checkoutOrder!.orderStatus, orderItems: checkoutOrder!.orderItems, payment: checkoutOrder!.payment }, { headers: { Authorization: `Bearer ${jwt}` } });
             setCheckoutOrder(FormatUtils.formatOrder(response.data));
             console.log('Order after being placed');
             console.log(response.data);
@@ -285,7 +310,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             user, getUser, logoutUser,
             product, products, getProduct, getProducts,
             cart, getCart, addToCart, removeFromCart, updateCartItem, clearCart,
-            checkoutOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, placeOrder, updateOrderItem,
+            checkoutOrder, placedOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, getPlacedOrder, placeOrder, updateOrderItem,
             queryResults, getQueryResults,
         }}>
             {children}
