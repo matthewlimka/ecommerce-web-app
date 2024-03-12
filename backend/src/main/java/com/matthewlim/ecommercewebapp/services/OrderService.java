@@ -3,6 +3,7 @@ package com.matthewlim.ecommercewebapp.services;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -117,12 +118,16 @@ public class OrderService {
 					return new OrderNotFoundException("No order with order ID " + orderId + " found");
 				});
 		
+		Payment updatedOrderPayment = updatedOrder.getPayment();
+		String transactionId = "SG-" + updatedOrderPayment.getPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		Payment payment = new Payment(updatedOrderPayment.getPaymentDate(), transactionId, updatedOrderPayment.getAmount(), updatedOrderPayment.getPaymentMethod(), updatedOrder);
+		
 		existingOrder.setOrderDate(updatedOrder.getOrderDate());
 		existingOrder.setTotalAmount(updatedOrder.getTotalAmount());
 		existingOrder.setOrderStatus(updatedOrder.getOrderStatus());
 		existingOrder.setUser(updatedOrder.getUser());
 		existingOrder.setOrderItems(updatedOrder.getOrderItems());
-		existingOrder.setPayment(updatedOrder.getPayment());
+		existingOrder.setPayment(payment);
 		
 		for (OrderItem orderItem: existingOrder.getOrderItems()) {
 			orderItem.setOrder(existingOrder);
