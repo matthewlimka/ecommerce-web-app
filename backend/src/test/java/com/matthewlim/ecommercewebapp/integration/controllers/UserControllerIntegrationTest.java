@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +29,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matthewlim.ecommercewebapp.enums.Role;
-import com.matthewlim.ecommercewebapp.models.Address;
-import com.matthewlim.ecommercewebapp.models.Cart;
-import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 
@@ -61,7 +57,7 @@ public class UserControllerIntegrationTest {
           .apply(springSecurity())
           .build();
         
-        testUser = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
+        testUser = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER);
         testUser = userRepo.save(testUser);
     }
     
@@ -85,7 +81,7 @@ public class UserControllerIntegrationTest {
     @Test
     @WithMockUser
     public void testCreateUserEndpoint() throws Exception {
-    	User user = new User("johnWick", "yeah", "johnwick@gmail.com", "John", "Wick", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
+    	User user = new User("johnWick", "yeah", "johnwick@gmail.com", "John", "Wick", Role.USER);
 
         mockMvc.perform(post("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +93,7 @@ public class UserControllerIntegrationTest {
     @WithMockUser
     public void testUpdateUserEndpoint() throws Exception {
         Long userId = testUser.getUserId();
-        User updatedUser = new User("bobbyRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
+        User updatedUser = new User("bobbyRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER);
 
         mockMvc.perform(put("/api/v1/users/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
