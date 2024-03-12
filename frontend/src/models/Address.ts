@@ -2,7 +2,7 @@ import User from './User';
 
 interface Address {
     addressId: number;
-    street?: string;
+    streetAddress?: string;
     city?: string;
     state?: string;
     postalCode?: string;
