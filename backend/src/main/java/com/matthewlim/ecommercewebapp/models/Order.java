@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matthewlim.ecommercewebapp.enums.OrderStatus;
 
 import jakarta.persistence.CascadeType;
@@ -42,14 +41,14 @@ public class Order {
 	private OrderStatus orderStatus;
 	
 	@ManyToOne
-	@JoinColumn(name ="user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems;
 	
-	@JsonIgnore
-	@OneToOne(mappedBy = "order")
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	@JoinColumn(name = "payment_id")
 	private Payment payment;
 
 	public Order(LocalDateTime orderDate, BigDecimal totalAmount, OrderStatus orderStatus, User user,
