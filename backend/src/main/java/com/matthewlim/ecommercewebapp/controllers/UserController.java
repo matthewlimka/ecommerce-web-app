@@ -36,13 +36,13 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping("/users")
-	public List<User> getUsers(@RequestParam(required = false) String username, @RequestParam(required = false) String email, @RequestParam(required = false) Address address, @RequestParam(required = false) Order order) {
+	public List<User> getUsers(@RequestParam(required = false) String username, @RequestParam(required = false) String email, @RequestParam(required = false) Address shippingAddress, @RequestParam(required = false) Order order) {
 		if ( username != null ) {
 			return new ArrayList<User>(Arrays.asList(userService.findByUsername(username)));
 		} else if ( email != null ) {
 			return new ArrayList<User>(Arrays.asList(userService.findByEmail(email)));
-		} else if ( address != null ) {
-			return new ArrayList<User>(Arrays.asList(userService.findByAddress(address)));
+		} else if ( shippingAddress != null ) {
+			return new ArrayList<User>(Arrays.asList(userService.findByShippingAddress(shippingAddress)));
 		} else if ( order != null ) {
 			return new ArrayList<User>(Arrays.asList(userService.findByOrders(order)));
 		} else {
