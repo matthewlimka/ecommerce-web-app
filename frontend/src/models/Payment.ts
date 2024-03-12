@@ -2,12 +2,12 @@ import PaymentMethod from "../enums/PaymentMethod";
 import Order from "./Order";
 
 interface Payment {
-    paymentId: number;
+    paymentId?: number;
     paymentDate: Date;
-    transactionId: string;
+    transactionId?: string;
     amount: number;
     paymentMethod: PaymentMethod;
-    order: Order;
+    order?: Order;
 }
 
 export default Payment;
