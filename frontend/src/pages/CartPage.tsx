@@ -29,33 +29,31 @@ const CartPage: React.FC = () => {
         <div className="page">
             <Navbar />
             <div className="cart-page-content">
-                <h1>My Cart</h1>
-                <div className="cards-container">
-                    <div className="cart-item-cards">
-                        {cart?.cartItems.length !== 0 ? (
-                            cart?.cartItems.map((cartItem) => {
-                                return (
-                                    <CartItemCard
-                                        cartItemId={cartItem.cartItemId}
-                                        quantity={cartItem.quantity}
-                                        subtotal={cartItem.subtotal}
-                                        cartId={cartItem.cartId}
-                                        product={cartItem.product}
-                                    />
-                                );
-                            })
-                        ) : (
-                            <div className="empty-cart-content">
-                                <h2>Your cart is empty</h2>
-                                <Link to="/home">Browse our products</Link>
-                            </div>
-                        )}
+                <h1 className="cart-page-header">My Cart</h1>
+                {cart?.cartItems.length !== 0 ? (
+                    <div className="cards-container">
+                        <div className="cart-item-cards">
+                            {cart?.cartItems.map((cartItem) => (
+                                <CartItemCard
+                                    cartItemId={cartItem.cartItemId}
+                                    quantity={cartItem.quantity}
+                                    subtotal={cartItem.subtotal}
+                                    cartId={cartItem.cartId}
+                                    product={cartItem.product}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="cart-page-empty-cart">
+                        <h1>Your cart is empty</h1>
+                        <Link to="/home">Browse our products</Link>
+                    </div>
+                )}
                 {cart?.cartItems.length !== 0 && (
                     <div className="cart-page-summary-section">
                         <h2>Summary</h2>
-                        <h3>Total: ${cart?.totalAmount}</h3>
+                        <h3>Total ({cart?.cartItems.length} item{cart?.cartItems.length === 1 ? '' : 's'}): ${cart?.totalAmount}</h3>
                         <button onClick={handleCheckout} className="cart-page-action-button">Checkout</button>
                     </div>
                 )}
