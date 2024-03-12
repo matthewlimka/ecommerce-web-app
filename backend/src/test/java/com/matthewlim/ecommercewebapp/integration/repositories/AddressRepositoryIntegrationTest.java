@@ -29,13 +29,13 @@ public class AddressRepositoryIntegrationTest {
 	private UserRepository userRepository;
 	
     @Test
-    public void testFindByStreet() {
-    	String street = "street";
+    public void testFindByStreetAddress() {
+    	String streetAddress = "streetAddress";
         Address address = new Address();
-        address.setStreet(street);
+        address.setStreetAddress(streetAddress);
         addressRepository.save(address);
 
-        List<Address> result = addressRepository.findByStreet(street);
+        List<Address> result = addressRepository.findByStreetAddress(streetAddress);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -106,15 +106,15 @@ public class AddressRepositoryIntegrationTest {
     @Test
     public void testFindByUser() {
         User user = new User();
-        Address address = new Address();
-        address.setUser(user);
-        user.setAddress(address);
+        Address shippingAddress = new Address();
+        shippingAddress.setUser(user);
+        user.setShippingAddress(shippingAddress);
         userRepository.save(user);
-        addressRepository.save(address);
+        addressRepository.save(shippingAddress);
 
         Optional<Address> result = addressRepository.findByUser(user);
 
         assertTrue(result.isPresent());
-        assertEquals(address, result.get());
+        assertEquals(shippingAddress, result.get());
     }
 }
