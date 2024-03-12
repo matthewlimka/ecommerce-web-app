@@ -34,10 +34,10 @@ public class AddressService {
 		return address;
 	}
 	
-	public List<Address> findByStreet(String street) {
-		List<Address> addresses = addressRepo.findByStreet(street);
+	public List<Address> findByStreetAddress(String streetAddress) {
+		List<Address> addresses = addressRepo.findByStreetAddress(streetAddress);
 				
-		logger.info("Successfully found " + addresses.size() + " addresses with street " + street);
+		logger.info("Successfully found " + addresses.size() + " addresses with street address " + streetAddress);
 		return addresses;
 	}
 	
@@ -99,7 +99,7 @@ public class AddressService {
 					return new AddressNotFoundException("No address with address ID " + addressId + " found");
 				});
 
-		existingAddress.setStreet(updatedAddress.getStreet());
+		existingAddress.setStreetAddress(updatedAddress.getStreetAddress());
 		existingAddress.setCity(updatedAddress.getCity());
 		existingAddress.setState(updatedAddress.getState());
 		existingAddress.setPostalCode(updatedAddress.getPostalCode());
