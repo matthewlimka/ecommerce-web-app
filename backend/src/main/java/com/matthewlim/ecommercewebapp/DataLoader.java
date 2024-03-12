@@ -10,6 +10,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
 import com.matthewlim.ecommercewebapp.enums.Role;
 import com.matthewlim.ecommercewebapp.models.Address;
 import com.matthewlim.ecommercewebapp.models.Cart;
@@ -58,17 +59,25 @@ public class DataLoader implements ApplicationRunner {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		List<User> usersToSave = new ArrayList<>();
-		User user1 = new User("user", passwordEncoder.encode("password"), "user@email.com", "user", "test", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
-		User admin1 = new User("admin", passwordEncoder.encode("password"), "admin@email.com", "admin", "test", Role.ADMIN, new ArrayList<Order>(), new Address(), new Cart());
-		usersToSave.add(user1);
-		usersToSave.add(admin1);
+		usersToSave.add(new User("user", passwordEncoder.encode("password"), "user@email.com", "user", "test", Role.USER));
+		usersToSave.add(new User("admin", passwordEncoder.encode("password"), "admin@email.com", "admin", "test", Role.ADMIN));
 		for (User user : usersToSave) {
-			user.getAddress().setUser(user);
-			user.getCart().setUser(user);
+			List<PaymentMethod> userRegisteredPaymentMethods = user.getRegisteredPaymentMethods();
+			userRegisteredPaymentMethods.addAll(List.of(PaymentMethod.PAYNOW, PaymentMethod.CREDIT_CARD_MASTERCARD));
+			user.setRegisteredPaymentMethods(userRegisteredPaymentMethods);
+			switch (user.getRole()) {
+				case USER: user.setShippingAddress(new Address("369 Sembawang Rd, #01-04", "Singapore", "Singapore", "758382", "Singapore", user));
+						   break;
+				case ADMIN: user.setShippingAddress(new Address("38 Beach Rd", "Singapore", "Singapore", "189767", "Singapore", user));
+							break;
+				default: break;
+			}
+			user.setCart(new Cart());
+			user.setOrders(new ArrayList<Order>());
+			user.getCart().setUser(user);			
 		}
 		userRepo.saveAll(usersToSave);
 		
