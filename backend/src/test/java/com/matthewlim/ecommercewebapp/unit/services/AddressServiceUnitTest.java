@@ -59,14 +59,14 @@ public class AddressServiceUnitTest {
 	}
 	
 	@Test
-	public void testFindByStreet() {
-		String street = "street";
+	public void testFindByStreetAddress() {
+		String streetAddress = "streetAddress";
 		Address address = new Address();
-		address.setStreet(street);
+		address.setStreetAddress(streetAddress);
 		List<Address> addressList = new ArrayList<Address>(Arrays.asList(address));
 		
-		when(addressRepository.findByStreet(street)).thenReturn(addressList);
-		List<Address> result = addressService.findByStreet(street);
+		when(addressRepository.findByStreetAddress(streetAddress)).thenReturn(addressList);
+		List<Address> result = addressService.findByStreetAddress(streetAddress);
 		
 		assertNotNull(result);
 		assertThat(result).hasSize(addressList.size()).containsExactlyElementsOf(addressList);
@@ -159,14 +159,14 @@ public class AddressServiceUnitTest {
 		existingAddress.setAddressId(addressId);
 		
 		Address updatedAddress = new Address();
-		updatedAddress.setStreet("updatedStreet");
+		updatedAddress.setStreetAddress("updatedStreetAddress");
 		
 		when(addressRepository.findById(addressId)).thenReturn(Optional.of(existingAddress));
 		when(addressRepository.save(existingAddress)).thenReturn(updatedAddress);
 		Address result = addressService.updateAddress(addressId, updatedAddress);
 		
 		assertNotNull(result);
-		assertEquals(updatedAddress.getStreet(), result.getStreet());
+		assertEquals(updatedAddress.getStreetAddress(), result.getStreetAddress());
 	}
 	
 	@Test
@@ -176,7 +176,7 @@ public class AddressServiceUnitTest {
 		existingAddress.setAddressId(addressId);
 		
 		Map<String, Object> fieldsToUpdate = new HashMap<String, Object>();
-		fieldsToUpdate.put("street", "Hollywood Street");
+		fieldsToUpdate.put("streetAddress", "Hollywood Street");
 		fieldsToUpdate.put("city", "Los Angeles");
 		
 		when(addressRepository.findById(addressId)).thenReturn(Optional.of(existingAddress));
@@ -184,7 +184,7 @@ public class AddressServiceUnitTest {
 		Address result = addressService.partialUpdateAddress(addressId, fieldsToUpdate);
 		
 		assertNotNull(result);
-		assertEquals(fieldsToUpdate.get("street"), result.getStreet());
+		assertEquals(fieldsToUpdate.get("streetAddress"), result.getStreetAddress());
 		assertEquals(fieldsToUpdate.get("city"), result.getCity());
 	}
 	
