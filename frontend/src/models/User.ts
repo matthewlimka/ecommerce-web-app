@@ -1,4 +1,5 @@
 import Role from '../enums/Role';
+import PaymentMethod from '../enums/PaymentMethod';
 import Order from './Order';
 import Address from './Address';
 import Cart from './Cart';
@@ -11,8 +12,9 @@ interface User {
     firstName?: string;
     lastName?: string;
     role: Role;
+    registeredPaymentMethods: PaymentMethod[];
     orders: Order[];
-    address?: Address;
+    shippingAddress?: Address;
     cart: Cart;
 }
 
