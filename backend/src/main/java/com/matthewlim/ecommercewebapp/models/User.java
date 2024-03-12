@@ -1,10 +1,12 @@
 package com.matthewlim.ecommercewebapp.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
 import com.matthewlim.ecommercewebapp.enums.Role;
 
 import jakarta.persistence.CascadeType;
@@ -46,20 +48,21 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@Enumerated(EnumType.STRING)
+	private List<PaymentMethod> registeredPaymentMethods;
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Order> orders;
 
-	@JsonIgnore
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-	private Address address;
+	private Address shippingAddress;
 
 	@JsonIgnore
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private Cart cart;
 
-	public User(String username, String password, String email, String firstName, String lastName, Role role, List<Order> orders,
-			Address address, Cart cart) {
+	public User(String username, String password, String email, String firstName, String lastName, Role role) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -67,8 +70,9 @@ public class User {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.role = role;
-		this.orders = orders;
-		this.address = address;
-		this.cart = cart;
+		this.registeredPaymentMethods = new ArrayList<PaymentMethod>();
+		this.orders = new ArrayList<Order>();
+		this.shippingAddress = new Address();
+		this.cart = new Cart();
 	}
 }
