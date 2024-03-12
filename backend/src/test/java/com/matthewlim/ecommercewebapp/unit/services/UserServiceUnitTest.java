@@ -86,16 +86,16 @@ public class UserServiceUnitTest {
 	}
 	
 	@Test
-	public void testFindByAddress() {
-		Address address = new Address();
+	public void testFindByShippingAddress() {
+		Address shippingAddress = new Address();
 		User user = new User();
-		user.setAddress(address);
+		user.setShippingAddress(shippingAddress);
 		
-		when(userRepository.findByAddress(address)).thenReturn(Optional.of(user));		
-		User result = userService.findByAddress(address);
+		when(userRepository.findByShippingAddress(shippingAddress)).thenReturn(Optional.of(user));
+		User result = userService.findByShippingAddress(shippingAddress);
 		
 		assertNotNull(result);
-		assertEquals(address, result.getAddress());
+		assertEquals(shippingAddress, result.getShippingAddress());
 	}
 	
 	@Test
