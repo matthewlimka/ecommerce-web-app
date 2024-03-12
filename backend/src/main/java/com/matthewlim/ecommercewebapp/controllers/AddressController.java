@@ -33,9 +33,9 @@ public class AddressController {
 	private AddressService addressService;
 
 	@GetMapping
-	public List<Address> getAddresses(@RequestParam(required = false) String street, @RequestParam(required = false) String city, @RequestParam(required = false) String state, @RequestParam(required = false) String postalCode, @RequestParam(required = false) String country, @RequestParam(required = false) User user) {
-		if ( street != null ) {
-			return addressService.findByStreet(street);
+	public List<Address> getAddresses(@RequestParam(required = false) String streetAddress, @RequestParam(required = false) String city, @RequestParam(required = false) String state, @RequestParam(required = false) String postalCode, @RequestParam(required = false) String country, @RequestParam(required = false) User user) {
+		if ( streetAddress != null ) {
+			return addressService.findByStreetAddress(streetAddress);
 		} else if ( city != null ) {
 			return addressService.findByCity(city);
 		} else if ( state != null ) {
