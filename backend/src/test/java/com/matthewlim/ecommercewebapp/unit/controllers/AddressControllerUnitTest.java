@@ -134,7 +134,7 @@ public class AddressControllerUnitTest {
 	public void testPartialUpdateAddress() throws Exception {
         Long addressId = testAddress.getAddressId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
-        fieldsToUpdate.put("street", "Wall Street");
+        fieldsToUpdate.put("streetAddress", "Wall Street");
         fieldsToUpdate.put("city", "New York City");
 
         mockMvc.perform(patch("/api/v1/addresses/{addressId}", addressId)
