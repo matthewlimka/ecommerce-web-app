@@ -37,9 +37,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matthewlim.ecommercewebapp.controllers.UserController;
 import com.matthewlim.ecommercewebapp.enums.Role;
-import com.matthewlim.ecommercewebapp.models.Address;
-import com.matthewlim.ecommercewebapp.models.Cart;
-import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.UserService;
 
@@ -103,7 +100,7 @@ public class UserControllerUnitTest {
 	@Test
 	@WithMockUser
 	public void testCreateUser() throws Exception {
-		User user = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
+		User user = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER);
 		user.setUserId(1L);
 		when(userService.addUser(testUser)).thenReturn(testUser);
 		
@@ -122,7 +119,7 @@ public class UserControllerUnitTest {
 	@WithMockUser
 	public void testUpdateUser() throws Exception {
         Long userId = testUser.getUserId();
-        User updatedUser = new User("johnwick", "yeahhh", "johnwick@gmail.com", "John", "Wick", Role.USER, new ArrayList<Order>(), new Address(), new Cart());
+        User updatedUser = new User("johnwick", "yeahhh", "johnwick@gmail.com", "John", "Wick", Role.USER);
         when(userService.updateUser(userId, testUser)).thenReturn(updatedUser);
         
         mockMvc.perform(put("/api/v1/users/{userId}", userId)
