@@ -12,7 +12,7 @@ import ResultPage from './pages/ResultPage';
 import CartPage from './pages/CartPage';
 import ProfilePage from './pages/ProfilePage';
 import CheckoutPage from './pages/CheckoutPage';
-import PaymentPage from './pages/PaymentPage';
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
             <Route path="/cart/:userId" element={<CartPage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
           </Routes>
         </div>
       </APIProvider>
