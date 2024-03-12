@@ -112,7 +112,7 @@ public class AddressControllerIntegrationTest {
     public void testPartialUpdateAddressEndpoint() throws Exception {
         Long addressId = testAddress.getAddressId();
         Map<String, Object> fieldsToUpdate = new HashMap<>();
-        fieldsToUpdate.put("street", "Oak Street");
+        fieldsToUpdate.put("streetAddress", "Oak Street");
         fieldsToUpdate.put("city", "San Francisco");
         fieldsToUpdate.put("postalCode", "987654");
 
