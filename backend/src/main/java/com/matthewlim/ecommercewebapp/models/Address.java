@@ -25,7 +25,7 @@ public class Address {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long addressId;
 	
-	private String street;
+	private String streetAddress;
 	private String city;
 	private String state;
 	private String postalCode;
@@ -36,9 +36,9 @@ public class Address {
 	@JoinColumn(name = "user_id")
 	private User user;
 	
-	public Address(String street, String city, String state, String postalCode, String country, User user) {
+	public Address(String streetAddress, String city, String state, String postalCode, String country, User user) {
 		super();
-		this.street = street;
+		this.streetAddress = streetAddress;
 		this.city = city;
 		this.state = state;
 		this.postalCode = postalCode;
