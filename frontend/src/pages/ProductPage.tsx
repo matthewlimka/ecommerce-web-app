@@ -53,20 +53,20 @@ const ProductPage: React.FC = () => {
         <div className="page">
             <Navbar />
             <div className="product-page-content">
-                <div className="left-section">
+                <div className="product-page-image-section">
                     <img src="https://via.placeholder.com/300" alt="Product" />
                 </div>
-                <div className="right-section">
-                    <h1 className="product-name">{product?.productName}</h1>
-                    <h2 className="price">${product?.price.toFixed(2)}</h2>
-                    <div className="quantity">
-                        <h2>Quantity</h2>
+                <div className="product-page-detail-section">
+                    <h1 className="product-page-product-name">{product?.productName}</h1>
+                    <h2 className="product-page-price">${product?.price.toFixed(2)}</h2>
+                    <div className="product-page-quantity">
+                        <h3 className="product-page-quantity-header">Quantity</h3>
                         <button onClick={decreaseQuantity} className="product-page-quantity-button">-</button>
-                        <span>{quantity}</span>
+                        <span className="product-page-quantity-value">{quantity}</span>
                         <button onClick={increaseQuantity} className="product-page-quantity-button">+</button>
-                        <span>{product?.stockQuantity} available</span>
+                        <span className="product-page-stock-quantity-value">{product?.stockQuantity} available</span>
                     </div>
-                    <div className="buttons-section">
+                    <div className="product-page-detail-section-buttons">
                         <button onClick={handleAddToCart} className="product-page-action-button">Add to Cart</button>
                         <button onClick={handleBuyNow} className="product-page-action-button">Buy Now</button>
                     </div>
