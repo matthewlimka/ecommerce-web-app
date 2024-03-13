@@ -31,29 +31,28 @@ const CartPage: React.FC = () => {
             <div className="cart-page-content">
                 <h1 className="cart-page-header">My Cart</h1>
                 {cart?.cartItems.length !== 0 ? (
-                    <div className="cards-container">
-                        <div className="cart-item-cards">
-                            {cart?.cartItems.map((cartItem) => (
-                                <CartItemCard
-                                    cartItemId={cartItem.cartItemId}
-                                    quantity={cartItem.quantity}
-                                    subtotal={cartItem.subtotal}
-                                    cartId={cartItem.cartId}
-                                    product={cartItem.product}
-                                />
-                            ))}
-                        </div>
+                    <div className="cart-page-items-section">
+                        <h2 className="cart-page-items-section-header">Products In Cart</h2>
+                        {cart?.cartItems.map((cartItem) => (
+                            <CartItemCard
+                                cartItemId={cartItem.cartItemId}
+                                quantity={cartItem.quantity}
+                                subtotal={cartItem.subtotal}
+                                cartId={cartItem.cartId}
+                                product={cartItem.product}
+                            />
+                        ))}
                     </div>
                 ) : (
                     <div className="cart-page-empty-cart">
-                        <h1>Your cart is empty</h1>
+                        <h1 className="cart-page-empty-cart-header">Your cart is empty</h1>
                         <Link to="/home">Browse our products</Link>
                     </div>
                 )}
                 {cart?.cartItems.length !== 0 && (
                     <div className="cart-page-summary-section">
-                        <h2>Summary</h2>
-                        <h3>Total ({cart?.cartItems.length} item{cart?.cartItems.length === 1 ? '' : 's'}): ${cart?.totalAmount}</h3>
+                        <h2 className="cart-page-summary-header">Summary</h2>
+                        <h3 className="cart-page-summary-total">Total ({cart?.cartItems.length} item{cart?.cartItems.length === 1 ? '' : 's'}): ${cart?.totalAmount.toFixed(2)}</h3>
                         <button onClick={handleCheckout} className="cart-page-action-button">Checkout</button>
                     </div>
                 )}
