@@ -7,43 +7,96 @@
     height: 100%;
     min-height: 100vh;
     width: 60%;
+    min-width: 750px;
     margin-top: 15px;
     padding-top: 25px;
     border-radius: 1rem;
     background-color: var(--paragraph);
-    color: lightgray;
+    color: var(--background);
 
-    h1 {
-        align-self: flex-start;
-        margin: 0;
-        color: var(--headline);
-    }
-
-    .left-section {
+    .product-page-image-section {
         flex: 2;
-        background-color: yellow;
+        min-width: 350px;
+        margin: 20px 0px 0px 0px;
 
         img {
             border-color: black;
             border-style: solid;
+            height: 300px;
+            width: 300px;
         }
     }
 
-    .right-section {
+    .product-page-detail-section {
         flex: 3;
-        background-color: green;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 10px 0px 0px 0px;
 
-        h1 {
+        .product-page-product-name {
             text-align: left;
+            margin: 0px;
         }
 
-        h2 {
-            text-align: left;
+        .product-page-price {
+            margin: 50px 0px 20px 0px;
         }
 
-        .quantity {
+        .product-page-quantity {
             display: flex;
             align-items: center;
+            justify-content: center;
+
+            .product-page-quantity-header {
+                margin-right: 20px;
+            }
+
+            button {
+                background-color: var(--button);
+                border: 2px solid var(--background);
+                border-radius: 5px;
+                min-width: 20px;
+            }
+
+            button:hover {
+                background-color: var(--button-text);
+                color: var(--button);
+            }
+
+            .product-page-quantity-value {
+                margin: 0px 10px 2px 10px;
+                font-weight: 600;
+            }
+            .product-page-stock-quantity-value {
+                margin-left: 20px;
+                font-weight: 600;
+            }
+        }
+
+        .product-page-detail-section-buttons {
+            align-self: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+
+            button {
+                background-color: var(--button);
+                color: var(--button-text);
+                font-size: 14px;
+                font-weight: bold;
+                border: 2px solid var(--background);
+                border-radius: 5px;
+                margin: 0px 10px 0px 10px;
+                height: 40px;
+                width: 125px;
+            }
+    
+            button:hover {
+                background-color: var(--button-text);
+                color: var(--button);
+            }
         }
     }
 }
