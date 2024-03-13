@@ -3,6 +3,7 @@ import Cart from "./models/Cart"
 import CartItem from "./models/CartItem"
 import Order from "./models/Order"
 import OrderItem from "./models/OrderItem"
+import PaymentMethod from "./enums/PaymentMethod"
 
 const FormatUtils = {
     formatProduct(product: Product) {
@@ -40,6 +41,15 @@ const FormatUtils = {
         return {
             ...orderItem,
             subtotal: parseFloat(orderItem.subtotal.toFixed(2)),
+        }
+    },
+
+    formatPaymentMethod(paymentMethod: PaymentMethod) {
+        switch(paymentMethod) {
+            case PaymentMethod.PAYNOW: return 'PayNow';
+            case PaymentMethod.CREDIT_CARD_MASTERCARD: return 'Mastercard';
+            case PaymentMethod.CREDIT_CARD_VISA: return 'Visa';
+            default: return 'Invalid payment method';
         }
     }
 }
