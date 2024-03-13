@@ -1,0 +1,137 @@
+.checkout-success-page-content {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    height: 100%;
+    min-height: 50vh;
+    width: 70%;
+    margin: 15px 0 15px 0;
+    padding: 10px 0 25px 0;
+    border-radius: 1rem;
+    background-color: var(--paragraph);
+    color: var(--background);
+
+    .checkout-success-page-header {
+        align-self: flex-start;
+        margin: 15px 0 1rem 3.5rem;
+    }
+    
+    .checkout-success-page-order-section {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        align-items: flex-start;
+        justify-content: center;
+        background-color: var(--headline);
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px var(--card-highlight);
+        width: 95%;
+
+        .checkout-success-page-top-section {
+            display: flex;
+            flex-direction: row;
+            margin-top: 15px;
+            
+            :is(.checkout-success-page-order-details-section, .checkout-success-page-payment-details-section) {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+
+                .checkout-success-page-detail-line {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    width: 100%;
+                    text-align: left;
+
+                    h3 {
+                        margin: 10px 25px 10px 25px;
+                    }
+
+                    span {
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            .checkout-success-page-order-details-section {
+                .checkout-success-page-detail-line {
+                    h3 {
+                        width: 105px;
+                    }
+                }
+            }
+
+            .checkout-success-page-payment-details-section {
+                .checkout-success-page-detail-line {
+                    h3 {
+                        width: 160px;
+                    }
+                }
+            }
+        }
+
+        .checkout-success-page-order-items-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 10px 0px 20px 0px;
+            width: 100%;
+
+            .checkout-success-page-order-items-header {
+                margin: 15px 0px 15px 25px;
+            }
+
+            .checkout-success-page-order-items-section-headers {
+                p {
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin: 10px 0px 10px 0px;
+                }
+            }
+            :is(.checkout-success-page-order-items-section-headers, .checkout-success-page-order-item) {
+                display: flex;
+                width: 100%;
+
+                :is(.checkout-success-page-order-items-section-header-quantity, .checkout-success-page-order-items-section-header-subtotal, .checkout-success-page-order-item-quantity, .checkout-success-page-order-item-subtotal) {
+                    flex: 1;
+                }
+
+                :is(.checkout-success-page-order-items-section-header-product-name, .checkout-success-page-order-item-product-name) {
+                    flex: 6;
+                    display: flex;
+                    justify-content: left;
+                }
+            }
+        }
+    }
+
+    .checkout-success-page-message {
+        margin: 30px 0px 5px 0px;
+        line-height: 35px;
+    }
+
+    .checkout-success-page-actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+
+        button {
+            background-color: var(--button);
+            color: var(--button-text);
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid var(--background);
+            border-radius: 5px;
+            margin: 25px 0px 15px 0px;
+            padding: 0px 10px 0px 10px;
+            height: 40px;
+            min-width: 125px;
+        }
+        
+        button:hover {
+            background-color: var(--button-text);
+            color: var(--button);
+        }
+    }
+}
