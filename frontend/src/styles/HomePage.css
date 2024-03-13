@@ -6,14 +6,14 @@
     min-height: 80vh;
     width: 70%;
     margin: 15px 0 15px 0;
-    padding: 25px 0 25px 0;
+    padding: 10px 0 25px 0;
     border-radius: 1rem;
     background-color: var(--paragraph);
     color: var(--background);
 
     h1 {
         align-self: flex-start;
-        margin: 25px 0 1rem 3.5rem;
+        margin: 15px 0 1rem 3.5rem;
     }
 
     .top-products-section {
