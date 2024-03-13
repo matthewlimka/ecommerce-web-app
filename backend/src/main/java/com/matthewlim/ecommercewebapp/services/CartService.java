@@ -138,6 +138,9 @@ public class CartService {
 						// Updating cart item
 						// Find existing cart item from database if any
 						CartItem cartItemToSave = null;
+						BigDecimal subtotal = cartItem.get("subtotal") instanceof Double ? BigDecimal.valueOf((Double) cartItem.get("subtotal")) : BigDecimal.valueOf(((Integer) cartItem.get("subtotal")).doubleValue());
+						subtotal.setScale(2, RoundingMode.HALF_UP);
+						
 						if (cartItem.containsKey("cartItemId")) {
 							// Cart item ID provided
 							// Update existing cart item
@@ -148,9 +151,6 @@ public class CartService {
 										logger.error("No cart item with cart item ID " + cartItem.get("cartItemId") + " found");
 										return new CartItemNotFoundException("No cart item with cart item ID " + cartItem.get("cartItemId") + " found");
 									});
-							
-							BigDecimal subtotal = BigDecimal.valueOf((Double) cartItem.get("subtotal"));
-							subtotal.setScale(2, RoundingMode.HALF_UP);
 							
 							cartItemToSave.setCart(existingCart);
 							cartItemToSave.setProduct(product);
@@ -170,9 +170,6 @@ public class CartService {
 									logger.info("Existing cart item with product id " + product.getProductId() + " found");
 									cartItemToSave = existingCartItem;
 									
-									BigDecimal subtotal = BigDecimal.valueOf((Double) cartItem.get("subtotal"));
-									subtotal.setScale(2, RoundingMode.HALF_UP);
-									
 									cartItemToSave.setQuantity(existingCartItem.getQuantity() + (Integer) cartItem.get("quantity"));
 									cartItemToSave.setSubtotal(existingCartItem.getSubtotal().add(subtotal));
 									existingCartItemWithSameProduct = true;
@@ -183,9 +180,6 @@ public class CartService {
 							if (!existingCartItemWithSameProduct) {
 								// Create new cart item for the product
 								logger.info("No existing cart item with product id " + product.getProductId());
-								BigDecimal subtotal = BigDecimal.valueOf((Double) cartItem.get("subtotal"));
-								subtotal.setScale(2, RoundingMode.HALF_UP);
-								
 								cartItemToSave = new CartItem((Integer) cartItem.get("quantity"), subtotal, existingCart, product);
 							}
 						}
