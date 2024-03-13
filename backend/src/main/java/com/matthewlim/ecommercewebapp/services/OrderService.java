@@ -120,7 +120,7 @@ public class OrderService {
 		
 		Payment updatedOrderPayment = updatedOrder.getPayment();
 		String transactionId = "SG-" + updatedOrderPayment.getPaymentDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-		Payment payment = new Payment(updatedOrderPayment.getPaymentDate(), transactionId, updatedOrderPayment.getAmount(), updatedOrderPayment.getPaymentMethod(), updatedOrder);
+		Payment payment = new Payment(updatedOrderPayment.getPaymentDate(), transactionId, updatedOrderPayment.getAmount(), updatedOrderPayment.getPaymentMethod(), existingOrder);
 		
 		existingOrder.setOrderDate(updatedOrder.getOrderDate());
 		existingOrder.setTotalAmount(updatedOrder.getTotalAmount());
