@@ -30,7 +30,6 @@ type APIContextType = {
     userOrders: Order[];
     getUserOrders: (jwt: string) => void;
     getCheckoutOrder: (jwt: string, orderId: number) => void;
-    getPlacedOrder(jwt: string): void;
     createCheckoutOrder: (jwt: string) => void;
     placeOrder: (jwt: string, selectedPaymentMethod: PaymentMethod) => void;
     updateOrderItem: (jwt: string, orderItemId: number, quantity: number) => void;
@@ -57,7 +56,6 @@ const APIContext = createContext<APIContextType>({
     userOrders: [],
     getUserOrders: (jwt: string) => {},
     getCheckoutOrder: (jwt: string, orderId: number) => {},
-    getPlacedOrder: (jwt: string) => {},
     createCheckoutOrder: (jwt: string) => {},
     placeOrder: (jwt: string, selectedPaymentMethod: PaymentMethod) => {},
     updateOrderItem: (jwt: string, orderItemId: number, quantity: number) => {},
@@ -251,15 +249,6 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         console.log(response.data);
     };
 
-    const getPlacedOrder = async (jwt: string) => {
-        try {
-            const response = await axios.get(`${API}/orders/${checkoutOrder!.orderId}`, { headers: { Authorization: `Bearer ${jwt}` } });
-            setPlacedOrder(FormatUtils.formatOrder(response.data));
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     const placeOrder = async (jwt: string, selectedPaymentMethod: PaymentMethod) => {
         try {
             console.log('Order before being placed');
@@ -275,7 +264,8 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             checkoutOrder!.orderStatus = OrderStatus.PROCESSING;
 
             const response = await axios.put(`${API}/orders/${checkoutOrder!.orderId}`, { orderDate: checkoutOrder!.orderDate, totalAmount: checkoutOrder!.totalAmount, orderStatus: checkoutOrder!.orderStatus, orderItems: checkoutOrder!.orderItems, payment: checkoutOrder!.payment }, { headers: { Authorization: `Bearer ${jwt}` } });
-            setCheckoutOrder(FormatUtils.formatOrder(response.data));
+            setPlacedOrder(FormatUtils.formatOrder(response.data));
+            setCheckoutOrder(null);
             console.log('Order after being placed');
             console.log(response.data);
         } catch (error) {
@@ -310,7 +300,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             user, getUser, logoutUser,
             product, products, getProduct, getProducts,
             cart, getCart, addToCart, removeFromCart, updateCartItem, clearCart,
-            checkoutOrder, placedOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, getPlacedOrder, placeOrder, updateOrderItem,
+            checkoutOrder, placedOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, placeOrder, updateOrderItem,
             queryResults, getQueryResults,
         }}>
             {children}
