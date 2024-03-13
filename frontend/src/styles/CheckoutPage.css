@@ -6,14 +6,14 @@
     min-height: 50vh;
     width: 70%;
     margin: 15px 0 15px 0;
-    padding: 25px 0 25px 0;
+    padding: 10px 0 25px 0;
     border-radius: 1rem;
     background-color: var(--paragraph);
     color: var(--background);
 
     .checkout-page-header {
         align-self: flex-start;
-        margin: 25px 0 1rem 3.5rem;
+        margin: 15px 0 1rem 3.5rem;
     }
 
     :is(.checkout-page-shipping-section, .checkout-page-items-section, .checkout-page-payment-section, .checkout-page-summary-section) {
@@ -49,7 +49,7 @@
         min-height: 30vh;
         padding-bottom: 10px;
 
-        .checkout-items-section-header {
+        .checkout-page-items-section-header {
             align-self: flex-start;
             margin: 15px 0 5px 25px;
             padding: 5px;
@@ -60,7 +60,8 @@
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
-        min-height: 10vh;
+        min-height: 100px;
+
         h2 {
             margin: 0px 10px 0px 25px;
             padding: 5px;
@@ -88,6 +89,12 @@
 
         h2, h3 {
             margin: 15px 0px 10px 0px;
+            padding: 0px 25px 0px 0px;
+        }
+
+        .checkout-page-place-order-error-message {
+            color: red;
+            margin: 5px 0px 5px 0px;
             padding: 0px 25px 0px 0px;
         }
 
