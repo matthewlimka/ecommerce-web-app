@@ -6,7 +6,7 @@ import FormatUtils from "../FormatUtils";
 
 const CheckoutSuccessPage: React.FC = () => {
 
-    const { placedOrder } = useAPI();
+    const { user, placedOrder } = useAPI();
     const navigate = useNavigate();
 
     return (
@@ -57,7 +57,7 @@ const CheckoutSuccessPage: React.FC = () => {
                 </div>
                 <h2 className="checkout-success-page-message">Thank you for your purchase!<br/>Your order has been placed successfully.</h2>
                 <div className="checkout-success-page-actions">
-                    <button>View Order</button>
+                    <button onClick={() => navigate(`/orders/${user?.userId}`)}>View Order</button>
                     <button onClick={() => navigate('/home')}>Continue Shopping</button>
                 </div>
             </div>
