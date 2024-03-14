@@ -7,7 +7,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import ProductPage from './pages/ProductPage';
-import OrderPage from './pages/OrderPage';
+import OrderHistoryPage from './pages/OrderHistoryPage';
 import ResultPage from './pages/ResultPage';
 import CartPage from './pages/CartPage';
 import ProfilePage from './pages/ProfilePage';
@@ -25,7 +25,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
             <Route path="/product/:productId" element={<ProductPage />} />
-            <Route path="/orders/:userId" element={<OrderPage />} />
+            <Route path="/orders/:userId" element={<OrderHistoryPage />} />
             <Route path="/result" element={<ResultPage />} />
             <Route path="/cart/:userId" element={<CartPage />} />
             <Route path="/profile/:userId" element={<ProfilePage />} />
