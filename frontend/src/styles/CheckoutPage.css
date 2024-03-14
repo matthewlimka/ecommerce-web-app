@@ -46,7 +46,7 @@
 
     .checkout-page-items-section {
         align-items: center;
-        min-height: 30vh;
+        justify-content: flex-start;
         padding-bottom: 10px;
 
         .checkout-page-items-section-header {
