@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
                     <Link to="/home" className={getActiveClass("/home")}>Home</Link>
                 </div>
                 <div className="productContainer">
-                    <Link to="/products" className={getActiveClass("/products")}>Products</Link>
+                    <Link to="/products" className={getActiveClass("/products")}>Browse</Link>
                 </div>
                 <Searchbar />
                 <div className="cartContainer">
