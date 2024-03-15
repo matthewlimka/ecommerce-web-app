@@ -95,7 +95,7 @@ const LoginPage: React.FC = () => {
                     <button onClick={handleGitHubLogin}>
                         Sign In via GitHub
                     </button>
-                    <button>Sign Up</button>
+                    <button onClick={() => navigate('/signup')}>Sign Up</button>
                 </div>
             </div>
         </div>
