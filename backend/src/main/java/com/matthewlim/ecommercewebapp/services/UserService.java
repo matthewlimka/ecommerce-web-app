@@ -8,15 +8,16 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
-import com.matthewlim.ecommercewebapp.enums.OrderStatus;
 import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
 import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
@@ -31,6 +32,9 @@ public class UserService implements UserDetailsService {
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@Autowired
+	private ApplicationContext applicationContext;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -107,8 +111,11 @@ public class UserService implements UserDetailsService {
 	}
 	
 	public User addUser(User user) {
-		logger.info("Successfully registered new user with user ID " + user.getUserId());
-		return userRepo.save(user);
+		PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		User savedUser = userRepo.save(user);
+		logger.info("Successfully registered new user with user ID " + savedUser.getUserId());
+		return savedUser;
 	}
 	
 	public User updateUser(Long userId, User updatedUser) {
@@ -123,7 +130,7 @@ public class UserService implements UserDetailsService {
 		existingUser.setEmail(updatedUser.getEmail());
 		existingUser.setFirstName(updatedUser.getFirstName());
 		existingUser.setLastName(updatedUser.getLastName());
-//		existingUser.setRegisteredPaymentMethods(updatedUser.getRegisteredPaymentMethods());
+		existingUser.setRegisteredPaymentMethods(updatedUser.getRegisteredPaymentMethods());
 		existingUser.setOrders(updatedUser.getOrders());
 		existingUser.setShippingAddress(updatedUser.getShippingAddress());
 		existingUser.setCart(updatedUser.getCart());
@@ -143,10 +150,10 @@ public class UserService implements UserDetailsService {
 			Field field = ReflectionUtils.findField(User.class, key);
 			field.setAccessible(true);
 			
-//			if (key.equals("registeredPaymentMethods") && value instanceof List) {
-//				List<PaymentMethod> registeredPaymentMethods = (List<PaymentMethod>) value;
-//				value = registeredPaymentMethods;
-//			}
+			if (key.equals("registeredPaymentMethods") && value instanceof List) {
+				List<PaymentMethod> registeredPaymentMethods = (List<PaymentMethod>) value;
+				value = registeredPaymentMethods;
+			}
 			
 			ReflectionUtils.setField(field, existingUser, value);
 		});
