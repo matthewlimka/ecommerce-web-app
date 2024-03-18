@@ -1,4 +1,4 @@
-import '../styles/LoginPage.css';
+import '../styles/LoginRegistrationPage.css';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,7 +14,7 @@ const LoginPage: React.FC = () => {
 
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [error, setError] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const handleFormLogin = async (event: any) => {
         event.preventDefault();
@@ -32,15 +32,29 @@ const LoginPage: React.FC = () => {
             console.log("Redirecting you to the home page");
             navigate("/home");
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.status === 401) {
-                    setError("Invalid credentials");
-                } else {
-                    setError("Failed to log in");
+            let errorMessage = "Unknown error occurred";
+            if (axios.isAxiosError(error) && error.response) {
+                switch (error.response.status) {
+                    case 401:
+                        switch (error.response.data.message) {
+                            case "Invalid username":
+                                errorMessage = "Invalid username";
+                                break;
+                            case "Invalid password":
+                                errorMessage = "Invalid password";
+                                break;
+                            default:
+                                errorMessage = "Invalid credentials";
+                                break;
+                        }
+                        break;
+                    default:
+                        errorMessage = "Failed to log in";
+                        break;
                 }
-            } else {
-                setError("Unknown error occurred");
             }
+            
+            setErrorMessage(errorMessage);
             console.log(error);
         }
     };
@@ -52,50 +66,40 @@ const LoginPage: React.FC = () => {
         try {
             window.location.href = GITHUB_AUTHORIZATION_URL;
         } catch (error) {
-            setError("Failed to log in via GitHub");
+            setErrorMessage("Failed to log in via GitHub");
             console.log(error);
         }
     };
 
     return (
-        <div className="loginPage">
-            <div className="loginSection">
-                <h1>Login</h1>
-                <div className="loginForm">
-                    <form onSubmit={handleFormLogin}>
-                        <div className="loginFormInput">
-                            <input
-                                type="text"
-                                ref={userRef}
-                                value={username}
-                                placeholder="Username"
-                                onChange={(event) =>
-                                    setUsername(event.target.value)
-                                }
-                                required
-                            />
-                        </div>
-                        <div className="loginFormInput">
-                            <input
-                                type="password"
-                                ref={userRef}
-                                value={password}
-                                placeholder="Password"
-                                onChange={(event) =>
-                                    setPassword(event.target.value)
-                                }
-                                required
-                            />
-                        </div>
-                        <button type="submit">Login</button>
-                    </form>
-                </div>
-                {error && <p>{error}</p>}
-                <div className="loginPageButtons">
-                    <button onClick={handleGitHubLogin}>
-                        Sign In via GitHub
-                    </button>
-                    <button onClick={() => navigate('/signup')}>Sign Up</button>
+        <div className="login-page">
+            <div className="login-page-content">
+                <h1 className="login-page-header">Login</h1>
+                <form className="login-page-form" onSubmit={handleFormLogin}>
+                    <input
+                        type="text"
+                        className="login-page-username"
+                        ref={userRef}
+                        value={username}
+                        placeholder="Username"
+                        onChange={(event) => setUsername(event.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        className="login-page-password"
+                        ref={userRef}
+                        value={password}
+                        placeholder="Password"
+                        onChange={(event) => setPassword(event.target.value)}
+                        required
+                    />
+                    {errorMessage && <p className="login-page-error-message">{errorMessage}</p>}
+                    <button className="login-page-login-button" type="submit">Login</button>
+                </form>
+                <div className="login-page-actions">
+                    <button className="login-page-action-button" onClick={handleGitHubLogin}>Sign In via GitHub</button>
+                    <button className="login-page-action-button" onClick={() => navigate('/signup')}>Sign Up</button>
                 </div>
             </div>
         </div>
