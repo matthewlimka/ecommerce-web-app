@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.enums.PaymentMethod;
+import com.matthewlim.ecommercewebapp.enums.Role;
 import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
 import com.matthewlim.ecommercewebapp.models.Order;
@@ -112,8 +113,10 @@ public class UserService implements UserDetailsService {
 	
 	public User addUser(User user) {
 		PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		User savedUser = userRepo.save(user);
+		User userToSave = new User(user.getUsername(), passwordEncoder.encode(user.getPassword()), user.getEmail(), user.getFirstName(), user.getLastName(), Role.USER);
+		userToSave.getCart().setUser(userToSave);
+		userToSave.getShippingAddress().setUser(userToSave);;
+		User savedUser = userRepo.save(userToSave);
 		logger.info("Successfully registered new user with user ID " + savedUser.getUserId());
 		return savedUser;
 	}
