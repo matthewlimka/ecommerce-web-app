@@ -46,7 +46,7 @@ const ProductPage: React.FC = () => {
     const handleBuyNow = (event: any) => {
         event.preventDefault();
         handleAddToCart(event);
-        navigate(`/cart${user?.userId}`);
+        navigate(`/cart/${user?.userId}`);
     }
 
     return (
