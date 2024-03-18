@@ -15,6 +15,9 @@ type APIContextType = {
     user: User | null;
     getUser: (jwt: string) => void;
     logoutUser: () => void;
+    registrationSuccess: boolean;
+    resetRegistrationSuccess: () => void;
+    registerUser: (username: string, password: string, email: string, firstName: string, lastName: string) => void;
     product: Product | null;
     products: Product[];
     getProduct: (productId: number) => void;
@@ -41,6 +44,9 @@ const APIContext = createContext<APIContextType>({
     user: null,
     getUser: (jwt: string) => {},
     logoutUser: () => {},
+    registrationSuccess: false,
+    resetRegistrationSuccess: () => {},
+    registerUser: (username: string, password: string, email: string, firstName: string, lastName: string) => {},
     product: null,
     products: [],
     getProduct: (productId: number) => {},
@@ -66,6 +72,7 @@ const APIContext = createContext<APIContextType>({
 export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const API = "http://localhost:9001/api/v1";
     const [user, setUser] = useState<User | null>(null);
+    const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false);
     const [product, setProduct] = useState<Product | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [cart, setCart] = useState<Cart | null>(null);
@@ -87,6 +94,21 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setUser(null);
     };
 
+    const resetRegistrationSuccess = () => {
+        setRegistrationSuccess(false);
+    }
+
+    const registerUser = async (username: string, password: string, email: string, firstName: string, lastName: string) => {
+        try {
+            const response = await axios.post(`${API}/users`, { username: username, password: password, email: email, firstName: firstName, lastName: lastName });
+            setRegistrationSuccess(true);
+            console.log('Registered user');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const getProduct = async (productId: number) => {
         try {
             const response = await axios.get(`${API}/products/${productId}`);
@@ -99,9 +121,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const getProducts = async () => {
         try {
             const response = await axios.get(`${API}/products`);
-            setProducts(
-                response.data.map((product: Product) => FormatUtils.formatProduct(product))
-            );
+            setProducts(response.data.map((product: Product) => FormatUtils.formatProduct(product)));
         } catch (error) {
             console.log(error);
         }
@@ -297,7 +317,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return (
         <APIContext.Provider value={{
-            user, getUser, logoutUser,
+            user, getUser, logoutUser, registrationSuccess, resetRegistrationSuccess, registerUser,
             product, products, getProduct, getProducts,
             cart, getCart, addToCart, removeFromCart, updateCartItem, clearCart,
             checkoutOrder, placedOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, placeOrder, updateOrderItem,
