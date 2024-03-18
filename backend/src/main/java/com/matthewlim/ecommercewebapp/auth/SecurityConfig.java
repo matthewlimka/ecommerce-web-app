@@ -123,7 +123,7 @@ public class SecurityConfig {
 	
 	@Bean
 	public JwtAuthorizationFilter jwtAuthorizationFilter() {
-	    return new JwtAuthorizationFilter(jwtDecoder());
+	    return new JwtAuthorizationFilter(jwtDecoder(), userService, passwordEncoder());
 	}
 	
 	@Bean
