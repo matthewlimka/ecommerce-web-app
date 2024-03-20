@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import FormatUtils from "../FormatUtils";
 import PaymentMethod from "../enums/PaymentMethod";
 import User from "../models/User";
+import Address from "../models/Address";
 import Product from "../models/Product";
 import Cart from "../models/Cart";
 import CartItem from "../models/CartItem";
@@ -18,6 +19,7 @@ type APIContextType = {
     registrationSuccess: boolean;
     resetRegistrationSuccess: () => void;
     registerUser: (username: string, password: string, email: string, firstName: string, lastName: string) => void;
+    updateShippingAddress(jwt: string, address: Address): void;
     product: Product | null;
     products: Product[];
     getProduct: (productId: number) => void;
@@ -47,6 +49,7 @@ const APIContext = createContext<APIContextType>({
     registrationSuccess: false,
     resetRegistrationSuccess: () => {},
     registerUser: (username: string, password: string, email: string, firstName: string, lastName: string) => {},
+    updateShippingAddress: (jwt: string, address: Address) => {},
     product: null,
     products: [],
     getProduct: (productId: number) => {},
@@ -103,6 +106,17 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             const response = await axios.post(`${API}/users`, { username: username, password: password, email: email, firstName: firstName, lastName: lastName });
             setRegistrationSuccess(true);
             console.log('Registered user');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateShippingAddress = async (jwt: string, address: Address) => {
+        try {
+            const response = await axios.put(`${API}/addresses/${address.addressId}`, { addressId: address.addressId, streetAddress: address.streetAddress, city: address.city, state: address.state, postalCode: address.postalCode, country: address.country, user: address.user }, { headers: { Authorization: `Bearer ${jwt}` }});
+            user!.shippingAddress = response.data;
+            console.log('Updated shipping address');
             console.log(response.data);
         } catch (error) {
             console.log(error);
@@ -317,7 +331,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return (
         <APIContext.Provider value={{
-            user, getUser, logoutUser, registrationSuccess, resetRegistrationSuccess, registerUser,
+            user, getUser, logoutUser, registrationSuccess, resetRegistrationSuccess, registerUser, updateShippingAddress,
             product, products, getProduct, getProducts,
             cart, getCart, addToCart, removeFromCart, updateCartItem, clearCart,
             checkoutOrder, placedOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, placeOrder, updateOrderItem,
