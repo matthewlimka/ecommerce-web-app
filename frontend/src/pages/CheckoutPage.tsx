@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useAPI } from "../contexts/APIContext";
+import ShippingAddressModal from "../components/ShippingAddressModal";
 import OrderItemCard from "../components/OrderItemCard";
 import PaymentMethod from "../enums/PaymentMethod";
 
@@ -11,6 +12,7 @@ const CheckoutPage: React.FC = () => {
 
     const { jwt } = useAuth();
     const { user, checkoutOrder, placeOrder, clearCart } = useAPI();
+    const [showModal, setShowModal] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>();
     const [buttonClicked, setButtonClicked] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -27,14 +29,30 @@ const CheckoutPage: React.FC = () => {
         event.preventDefault();
         setButtonClicked(true);
         
+        if (shippingAddress === 'No shipping address') {
+            setErrorMessage('Please add a shipping address');
+            console.log('Error message: ' + errorMessage);
+            setTimeout(() => {
+                setErrorMessage('');
+            }, 4000);
+            return;
+        }
+
         if (!selectedPaymentMethod) {
             setErrorMessage('Please select a payment method');
             console.log('Error message: ' + errorMessage);
+            setTimeout(() => {
+                setErrorMessage('');
+            }, 4000);
         } else {
             placeOrder(jwt!, selectedPaymentMethod!);
             clearCart(jwt!);
             navigate('/checkout/success');
         }
+    }
+
+    const closeModal = () => {
+        setShowModal(false);
     }
 
     return (
@@ -43,8 +61,13 @@ const CheckoutPage: React.FC = () => {
             <div className="checkout-page-content">
                 <h1 className="checkout-page-header">Checkout</h1>
                 <div className="checkout-page-shipping-section">
-                    <h2>Shipping Address</h2>
-                    <p>{shippingAddress.toUpperCase()}</p>
+                    <div className="checkout-page-shipping-section-header-container">
+                        <h2 className="checkout-page-shipping-section-header">Shipping Address</h2>
+                        <p className="checkout-page-shipping-section-change-button" onClick={() => setShowModal(true)}>Change</p>
+                        {showModal && <div className="checkout-page-modal-backdrop" />}
+                        <ShippingAddressModal showModal={showModal} closeModal={closeModal} shippingAddress={user!.shippingAddress!} />
+                    </div>
+                    <p className="checkout-page-shipping-address">{shippingAddress.toUpperCase()}</p>
                 </div>
                 <div className="checkout-page-items-section">
                     <h2 className="checkout-page-items-section-header">Products Ordered</h2>
@@ -62,31 +85,34 @@ const CheckoutPage: React.FC = () => {
                     <h2>Payment Method</h2>
                     <div className="checkout-page-payment-options">
                         <button
+                            id="paynow"
                             className={`checkout-page-payment-option ${selectedPaymentMethod === PaymentMethod.PAYNOW ? 'selected' : ''}`}
                             onClick={() => {
                                 setSelectedPaymentMethod(PaymentMethod.PAYNOW);
                                 setErrorMessage('');
                             }}
                         >
-                            PayNow
+                            <img className="checkout-page-payment-option-logo" src="/paynow-logo.svg"/>
                         </button>
                         <button
+                            id="mastercard"
                             className={`checkout-page-payment-option ${selectedPaymentMethod === PaymentMethod.CREDIT_CARD_MASTERCARD ? 'selected' : ''}`}
                             onClick={() => {
                                 setSelectedPaymentMethod(PaymentMethod.CREDIT_CARD_MASTERCARD);
                                 setErrorMessage('');
                             }}
                         >
-                            Mastercard
+                            <img className="checkout-page-payment-option-logo" src="/mastercard-logo.svg"/>
                         </button>
                         <button
+                            id="visa"
                             className={`checkout-page-payment-option ${selectedPaymentMethod === PaymentMethod.CREDIT_CARD_VISA ? 'selected' : ''}`}
                             onClick={() => {
                                 setSelectedPaymentMethod(PaymentMethod.CREDIT_CARD_VISA);
                                 setErrorMessage('');
                             }}
                         >
-                            Visa
+                            <img className="checkout-page-payment-option-logo" src="/visa-logo.svg"/>
                         </button>
                     </div>
                 </div>
