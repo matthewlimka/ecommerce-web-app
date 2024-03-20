@@ -15,11 +15,14 @@ import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.enums.OrderStatus;
 import com.matthewlim.ecommercewebapp.exceptions.OrderNotFoundException;
+import com.matthewlim.ecommercewebapp.exceptions.ProductNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.OrderItem;
 import com.matthewlim.ecommercewebapp.models.Payment;
+import com.matthewlim.ecommercewebapp.models.Product;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.OrderRepository;
+import com.matthewlim.ecommercewebapp.repositories.ProductRepository;
 
 @Service
 public class OrderService {
@@ -28,6 +31,9 @@ public class OrderService {
 	
 	@Autowired
 	private OrderRepository orderRepo;
+	
+	@Autowired
+	private ProductRepository productRepo;
 	
 	public Order findByOrderId(Long orderId) {
 		Order order = orderRepo.findById(orderId)
@@ -131,6 +137,23 @@ public class OrderService {
 		
 		for (OrderItem orderItem: existingOrder.getOrderItems()) {
 			orderItem.setOrder(existingOrder);
+			
+			// Update product's stock quantity once order has been processed
+			if (existingOrder.getOrderStatus().equals(OrderStatus.PROCESSING)) {
+				Product productToUpdate = productRepo.findById(orderItem.getProduct().getProductId())
+						.orElseThrow(() -> {
+							logger.error("No product with product ID " + orderItem.getProduct().getProductId() + " found");
+							return new ProductNotFoundException("No product with product ID " + orderItem.getProduct().getProductId() + " found");
+						});
+				int updatedStockQuantity = productToUpdate.getStockQuantity() - orderItem.getQuantity();
+				
+				if (updatedStockQuantity > 0) {					
+					productToUpdate.setStockQuantity(updatedStockQuantity);
+					orderItem.setProduct(productToUpdate);
+				} else {
+					throw new RuntimeException("Failed to update stock quantity - insufficient stock for order item ID " + orderItem.getOrderItemId());
+				}
+			}
 		}
 		
 		logger.info("Successfully updated order with order ID " + orderId);
