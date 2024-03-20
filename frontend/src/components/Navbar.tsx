@@ -9,8 +9,9 @@ const Navbar: React.FC = () => {
 
     const location = useLocation();
     const { jwt, logout } = useAuth();
-    const { user, getUser, logoutUser } = useAPI();
+    const { cart, user, getUser, logoutUser } = useAPI();
     const cartRoute: string = jwt !== null ? `/cart/${user?.userId}` : "/login";
+    const numOfCartItems: number = cart?.cartItems?.length ?? 0;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,43 +32,46 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <div className="navBar">
-            <div className="leftContainer">
-                <div className="homeContainer">
+        <div className="nav-bar">
+            <div className="nav-bar-left-container">
+                <div className="nav-bar-button">
                     <Link to="/home" className={getActiveClass("/home")}>Home</Link>
                 </div>
-                <div className="productContainer">
+                <div className="nav-bar-button">
                     <Link to="/products" className={getActiveClass("/products")}>Browse</Link>
                 </div>
                 <Searchbar />
-                <div className="cartContainer">
-                    <Link to={cartRoute} className={getActiveClass(`/cart/${user?.userId}`)}>Cart</Link>
-                </div>
+                <Link to={cartRoute} id="cart-icon" className={getActiveClass(`/cart/${user?.userId}`)}>
+                    <img className="nav-bar-cart-icon" src="/cart-icon.svg" alt=""/>
+                    {numOfCartItems > 0 && <p className="number-of-cart-items">{numOfCartItems}</p>}
+                    </Link>
             </div>
-            <div className="rightContainer">
+            <div className="nav-bar-right-container">
                 {jwt !== null ? (
-                    <div className="loggedInContainer">
-                        <div className="accountContainer">
-                            <p className="accountButton">Account</p>
-                            <div className="accountDropdown">
-                                <div className="profileButton">
+                    <div className="nav-bar-logged-in-container">
+                        <div className="nav-bar-account-container">
+                            <div className="nav-bar-button">
+                                <Link to={`/profile/${user?.userId}`}>Account</Link>
+                            </div>
+                            <div className="nav-bar-account-dropdown">
+                                <div className="nav-bar-dropdown-button">
                                     <Link to={`/profile/${user?.userId}`}>Profile</Link>
                                 </div>
-                                <div className="ordersButton">
+                                <div className="nav-bar-dropdown-button">
                                     <Link to={`/orders/${user?.userId}`}>Orders</Link>
                                 </div>
-                                <div className="logoutButton">
+                                <div className="nav-bar-dropdown-button">
                                     <p onClick={handleLogout}>Logout</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="notLoggedInContainer">
-                        <div className="signupButton">
+                    <div className="nav-bar-not-logged-in-container">
+                        <div className="nav-bar-button">
                             <Link to="/signup">Signup</Link>
                         </div>
-                        <div className="loginButton">
+                        <div className="nav-bar-button">
                             <Link to="/login">Login</Link>
                         </div>
                     </div>
