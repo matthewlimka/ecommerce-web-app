@@ -7,13 +7,16 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import com.matthewlim.ecommercewebapp.exceptions.AddressNotFoundException;
+import com.matthewlim.ecommercewebapp.exceptions.UserNotFoundException;
 import com.matthewlim.ecommercewebapp.models.Address;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.AddressRepository;
+import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 
 @Service
 public class AddressService {
@@ -22,6 +25,9 @@ public class AddressService {
 	
 	@Autowired
 	private AddressRepository addressRepo;
+	
+	@Autowired
+	private UserRepository userRepo;
 	
 	public Address findByAddressId(Long addressId) {
 		Address address = addressRepo.findById(addressId)
@@ -99,12 +105,19 @@ public class AddressService {
 					return new AddressNotFoundException("No address with address ID " + addressId + " found");
 				});
 
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = userRepo.findByUsername(username)
+				.orElseThrow(() -> {
+					logger.error("No user with username " + username + " found");
+					return new UserNotFoundException("No user with username " + username + " found");
+				});
+		
 		existingAddress.setStreetAddress(updatedAddress.getStreetAddress());
 		existingAddress.setCity(updatedAddress.getCity());
 		existingAddress.setState(updatedAddress.getState());
 		existingAddress.setPostalCode(updatedAddress.getPostalCode());
 		existingAddress.setCountry(updatedAddress.getCountry());
-		existingAddress.setUser(updatedAddress.getUser());
+		existingAddress.setUser(user);
 		
 		logger.info("Successfully updated address with address ID " + addressId);
 		return addressRepo.save(existingAddress);
