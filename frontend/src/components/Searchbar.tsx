@@ -12,10 +12,11 @@ const Searchbar: React.FC = () => {
     };
 
     return (
-        <div className="searchBar">
-            <form onSubmit={handleSubmit}>
+        <div className="search-bar">
+            <form className="search-bar-form" onSubmit={handleSubmit}>
                 <input
                     type="text"
+                    className="search-bar-input"
                     value={searchInput}
                     placeholder="Search for a product"
                     required
@@ -27,7 +28,7 @@ const Searchbar: React.FC = () => {
                         const target = event.target as HTMLInputElement;
                         target.setCustomValidity('Please enter a search term') }}
                 />
-                <button>Search</button>
+                <button className="search-bar-button"><img className="search-bar-button-icon" src="/search-icon.svg" /></button>
             </form>
         </div>
     );
