@@ -1,0 +1,38 @@
+.profile-page-content {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: flex-start;
+    height: 100%;
+    /* min-height: 50vh; */
+    width: 70%;
+    margin: 15px 0 15px 0;
+    padding: 10px 0 25px 0;
+    border-radius: 1rem;
+    background-color: var(--paragraph);
+    color: var(--background);
+
+    .profile-page-header {
+        margin: 15px 0 1rem 3.5rem;
+    }
+    
+    .profile-page-user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 15px 0 1rem 3.5rem;
+
+        .profile-page-line {
+            display: flex;
+            align-items: center;
+
+            .profile-page-label {
+                width: 125px;
+                text-align: left;
+            }
+
+            .profile-page-value {
+            }
+        }
+    }
+}
