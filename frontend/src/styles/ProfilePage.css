@@ -1,26 +1,63 @@
 .profile-page-content {
     display: flex;
-    flex-direction: column;
-    align-self: center;
     align-items: flex-start;
-    height: 100%;
-    /* min-height: 50vh; */
-    width: 70%;
-    margin: 15px 0 15px 0;
-    padding: 10px 0 25px 0;
-    border-radius: 1rem;
-    background-color: var(--paragraph);
-    color: var(--background);
+    justify-content: center;
 
-    .profile-page-header {
-        margin: 15px 0 1rem 3.5rem;
-    }
-    
-    .profile-page-user-info {
+    .profile-page-sidebar {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin: 15px 0 1rem 3.5rem;
+        justify-content: center;
+        margin: 75px 15px 0px 0px;
+        width: 175px;
+
+        .profile-page-sidebar-tab {
+            display: flex;  
+            justify-content: left;
+            text-align: left;
+            margin: 10px 0px 10px 0px;
+            color: var(--paragraph);
+            cursor: pointer;
+        }
+    }
+
+    .profile-page-main {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        align-items: flex-start;
+        height: 100%;
+        width: 57%;
+        margin: 15px 0 15px 0;
+        padding: 10px 0 25px 0;
+        border-radius: 1rem;
+        background-color: var(--paragraph);
+        color: var(--background);
+    
+        .profile-page-header {
+            text-align: left;
+            margin: 15px 0px 15px 50px;
+        }
+        
+        .profile-page-form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 15px 0 10px 50px;
+    
+            .profile-page-line .profile-page-input {
+                width: 250px;
+                padding: 5px;
+            }
+
+            .profile-page-button {
+                display: flex;
+                align-self: center;
+                align-items: center;
+                margin: 15px 0px 0px 0px;
+                padding: 10px;
+            }
+        }
 
         .profile-page-line {
             display: flex;
@@ -30,9 +67,10 @@
                 width: 125px;
                 text-align: left;
             }
-
-            .profile-page-value {
-            }
         }
     }
+}
+
+#payment-methods.profile-page-line {
+    margin: 0px 0 0px 50px;
 }
