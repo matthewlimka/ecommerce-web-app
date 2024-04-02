@@ -173,7 +173,7 @@
     background-color: var(--stroke);
     transition: 0.3s;
 
-    a {
+    a, p {
         color: var(--headline);
     }
 }
