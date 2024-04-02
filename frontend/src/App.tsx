@@ -8,10 +8,9 @@ import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import ProductPage from './pages/ProductPage';
-import OrderHistoryPage from './pages/OrderHistoryPage';
 import ResultPage from './pages/ResultPage';
 import CartPage from './pages/CartPage';
-import ProfilePage from './pages/ProfilePage';
+import AccountContainer from './components/AccountContainer';
 import CheckoutPage from './pages/CheckoutPage';
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
 
@@ -27,10 +26,12 @@ function App() {
             <Route path="/signup" element={<RegistrationPage />} />
             <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
             <Route path="/product/:productId" element={<ProductPage />} />
-            <Route path="/orders/:userId" element={<OrderHistoryPage />} />
             <Route path="/result" element={<ResultPage />} />
             <Route path="/cart/:userId" element={<CartPage />} />
-            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route path="/account/profile/:userId" element={<AccountContainer />} />
+            <Route path="/account/payment/:userId" element={<AccountContainer />} />
+            <Route path="/account/address/:userId" element={<AccountContainer />} />
+            <Route path="/account/orders/:userId" element={<AccountContainer />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
           </Routes>
