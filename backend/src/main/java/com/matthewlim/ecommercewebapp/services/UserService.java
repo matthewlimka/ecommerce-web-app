@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,7 +155,11 @@ public class UserService implements UserDetailsService {
 			field.setAccessible(true);
 			
 			if (key.equals("registeredPaymentMethods") && value instanceof List) {
-				List<PaymentMethod> registeredPaymentMethods = (List<PaymentMethod>) value;
+	            // Convert list of strings to list of PaymentMethod enums
+	            List<String> registeredPaymentMethodStrings = (List<String>) value;
+	            List<PaymentMethod> registeredPaymentMethods = registeredPaymentMethodStrings.stream()
+	                    .map(PaymentMethod::valueOf)
+	                    .collect(Collectors.toList());
 				value = registeredPaymentMethods;
 			}
 			
