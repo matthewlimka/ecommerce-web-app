@@ -44,15 +44,20 @@ public class OrderController {
 	private UserService userService;
 
 	@GetMapping
-	public List<Order> getOrders(@RequestParam(required = false) LocalDateTime orderDate, @RequestParam(required = false) BigDecimal totalAmount, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) User user, @RequestParam(required = false) OrderItem orderItem, @RequestParam(required = false) Payment payment) {
+	public List<Order> getOrders(@RequestParam(required = false) LocalDateTime orderDate, @RequestParam(required = false) BigDecimal totalAmount, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) OrderItem orderItem, @RequestParam(required = false) Payment payment) {
+		if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			User user = userService.findByUsername(username);
+			return orderService.findByUser(user);
+		}
+		
 		if ( orderDate != null ) {
 			return new ArrayList<Order>(Arrays.asList(orderService.findByOrderDate(orderDate)));
 		} else if ( totalAmount != null ) {
 			return orderService.findByTotalAmount(totalAmount);
 		} else if ( orderStatus != null ) {
 			return orderService.findByOrderStatus(orderStatus);
-		} else if ( user != null ) {
-			return orderService.findByUser(user);
 		} else if ( orderItem != null ) {
 			return new ArrayList<Order>(Arrays.asList(orderService.findByOrderItems(orderItem)));
 		} else if ( payment != null ) {
