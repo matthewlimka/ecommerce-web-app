@@ -20,6 +20,8 @@ type APIContextType = {
     resetRegistrationSuccess: () => void;
     registerUser: (username: string, password: string, email: string, firstName: string, lastName: string) => void;
     updateShippingAddress(jwt: string, address: Address): void;
+    updateProfile(jwt: string, firstName: string, lastName: string): void;
+    updatePaymentMethods: (jwt: string, paymentMethods: PaymentMethod[]) => void;
     product: Product | null;
     products: Product[];
     getProduct: (productId: number) => void;
@@ -50,6 +52,8 @@ const APIContext = createContext<APIContextType>({
     resetRegistrationSuccess: () => {},
     registerUser: (username: string, password: string, email: string, firstName: string, lastName: string) => {},
     updateShippingAddress: (jwt: string, address: Address) => {},
+    updateProfile: (jwt: string, firstName: string, lastName: string) => {},
+    updatePaymentMethods: (jwt: string, paymentMethods: PaymentMethod[]) => {},
     product: null,
     products: [],
     getProduct: (productId: number) => {},
@@ -117,6 +121,29 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             const response = await axios.put(`${API}/addresses/${address.addressId}`, { addressId: address.addressId, streetAddress: address.streetAddress, city: address.city, state: address.state, postalCode: address.postalCode, country: address.country, user: address.user }, { headers: { Authorization: `Bearer ${jwt}` }});
             user!.shippingAddress = response.data;
             console.log('Updated shipping address');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateProfile = async (jwt: string, firstName: string, lastName: string) => {
+        try {
+            const response = await axios.patch(`${API}/user/${user!.userId}`, { firstName: firstName, lastName: lastName }, { headers: { Authorization: `Bearer ${jwt}` }});
+            user!.firstName = response.data.firstName;
+            user!.lastName = response.data.lastName;
+            console.log('Updated profile');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updatePaymentMethods = async (jwt: string, paymentMethods: PaymentMethod[]) => {
+        try {
+            const response = await axios.patch(`${API}/user/${user!.userId}`, { registeredPaymentMethods: paymentMethods }, { headers: { Authorization: `Bearer ${jwt}` }});
+            user!.registeredPaymentMethods = response.data.registeredPaymentMethods;
+            console.log('Updated payment methods');
             console.log(response.data);
         } catch (error) {
             console.log(error);
@@ -331,7 +358,7 @@ export const APIProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return (
         <APIContext.Provider value={{
-            user, getUser, logoutUser, registrationSuccess, resetRegistrationSuccess, registerUser, updateShippingAddress,
+            user, getUser, logoutUser, registrationSuccess, resetRegistrationSuccess, registerUser, updateShippingAddress, updateProfile, updatePaymentMethods,
             product, products, getProduct, getProducts,
             cart, getCart, addToCart, removeFromCart, updateCartItem, clearCart,
             checkoutOrder, placedOrder, userOrders, getUserOrders, getCheckoutOrder, createCheckoutOrder, placeOrder, updateOrderItem,
