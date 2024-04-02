@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
             <Navbar />
             <div className="home-page-content">
                 <h1>
-                    Welcome to ShoppersGate{user ? " " + user?.username : ""}!
+                    Welcome{user ? " " + user?.firstName : ""}!
                 </h1>
                 <div className="top-products-section">
                     <h2>Top Products</h2>
