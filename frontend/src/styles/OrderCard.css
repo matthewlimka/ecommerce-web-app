@@ -14,50 +14,39 @@
         flex-direction: row;
     }
     
-    .order-card-top-section {
-        margin-top: 15px;
-
-        :is(.order-card-order-details, .order-card-payment-details) {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-
-            .order-card-detail-line {
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-                width: 100%;
-                text-align: left;
-
-                h3 {
-                    margin: 10px 25px 10px 25px;
-                }
-
-                span {
-                    font-weight: 600;
-                }
-            }
-        }
-
-        .order-card-order-details .order-card-detail-line h3 {
-            width: 105px;
-        }
-
-        .order-card-payment-details .order-card-detail-line h3 {
-            width: 160px;
-        }
-    }
-
-    .order-card-status-section {
-        align-items: center;
-        justify-content: space-evenly;
-        min-height: 50px;
+    .order-card-order-details {
+        margin: 0px 0px 25px 0px;
         width: 100%;
-        margin: 10px 0px 10px 0px;
 
-        span {
-            font-size: 18px;
-            font-weight: 700;
+        :is(.order-card-order-details-header-section, .order-card-order-details-value-section) {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            span {
+                font-weight: 600;
+            }
+
+            #order {
+                flex: 1;
+            }
+
+            #order-date {
+                flex: 2;
+            }
+
+            #payment-method {
+                flex: 2;
+            }
+
+            #delivery-status {
+                flex: 2;
+            }
+
+            #total {
+                flex: 1;
+            }
         }
     }
 
@@ -96,14 +85,14 @@
 }
 
 .order-card.collapsed {
-    min-height: 225px;
-    max-height: 225px;
+    min-height: 110px;
+    max-height: 110px;
     transition: min-height 0.3s ease, max-height 0.3s ease;
 }
 
 .order-card.expanded {
-    min-height: 300px;
-    max-height: 500px;
+    min-height: 150px;
+    max-height: 1000px;
     transition: min-height 0.3s ease, max-height 0.3s ease;
 }
 
