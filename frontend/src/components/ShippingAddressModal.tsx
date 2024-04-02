@@ -1,4 +1,4 @@
-import '../styles/ShippingAddressModal.css';
+import '../styles/UpdateModal.css';
 import { useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAPI } from '../contexts/APIContext';
@@ -44,20 +44,21 @@ const ShippingAddressModal: React.FC<ModalProps> = ({ showModal, closeModal, shi
     }
 
     return (
-        <dialog className="shipping-address-modal" ref={dialogRef} open={showModal}>
-            <p className="shipping-address-modal-close-button" onClick={handleCloseModal}>X</p>
+        <dialog id="shipping-address" className="modal" ref={dialogRef} open={showModal}>
+            <p id="shipping-address" className="modal-close-button" onClick={handleCloseModal}>X</p>
             {updateSuccess ? (
-                <div className="shipping-address-modal-after-update">
-                    <h2 className="shipping-address-modal-header">Success!</h2>
-                    <p className="shipping-address-modal-success-message">Shipping address has been updated</p>
+                <div id="shipping-address" className="modal-after-update">
+                    <h2 id="shipping-address" className="modal-header">Success!</h2>
+                    <p id="shipping-address" className="modal-success-message">Shipping address has been updated</p>
                 </div>
             ) : (
-                <div className="shipping-address-modal-before-update">
-                    <h2 className="shipping-address-modal-header">Update Shipping Address</h2>
-                    <form className="shipping-address-modal-form" onSubmit={handleUpdateShippingAddress}>
+                <div id="shipping-address" className="modal-before-update">
+                    <h2 id="shipping-address" className="modal-header">Update Shipping Address</h2>
+                    <form id="shipping-address" className="modal-form" onSubmit={handleUpdateShippingAddress}>
                         <input
                             type="text"
-                            className="shipping-address-modal-street-address"
+                            id="shipping-address"
+                            className="modal-form-input"
                             name="streetAddress"
                             value={formData.streetAddress}
                             onChange={handleChange}
@@ -66,7 +67,8 @@ const ShippingAddressModal: React.FC<ModalProps> = ({ showModal, closeModal, shi
                         />
                         <input
                             type="text"
-                            className="shipping-address-modal-city"
+                            id="shipping-address"
+                            className="modal-form-input"
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
@@ -75,7 +77,8 @@ const ShippingAddressModal: React.FC<ModalProps> = ({ showModal, closeModal, shi
                         />
                         <input
                             type="text"
-                            className="shipping-address-modal-state"
+                            id="shipping-address"
+                            className="modal-form-input"
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
@@ -84,7 +87,8 @@ const ShippingAddressModal: React.FC<ModalProps> = ({ showModal, closeModal, shi
                         />
                         <input
                             type="text"
-                            className="shipping-address-modal-postal-code"
+                            id="shipping-address"
+                            className="modal-form-input"
                             name="postalCode"
                             value={formData.postalCode}
                             onChange={handleChange}
@@ -93,14 +97,15 @@ const ShippingAddressModal: React.FC<ModalProps> = ({ showModal, closeModal, shi
                         />
                         <input
                             type="text"
-                            className="shipping-address-modal-country"
+                            id="shipping-address"
+                            className="modal-form-input"
                             name="country"
                             value={formData.country}
                             onChange={handleChange}
                             placeholder="Country"
                             required
                         />
-                        <button className="shipping-address-modal-submit-button" type="submit">Update</button>
+                        <button id="shipping-address" className="modal-submit-button" type="submit">Update</button>
                     </form>
                 </div>
             )}
