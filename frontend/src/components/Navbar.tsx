@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
                     <Link to="/home" className={getActiveClass("/home")}>Home</Link>
                 </div>
                 <div className="nav-bar-button">
-                    <Link to="/products" className={getActiveClass("/products")}>Browse</Link>
+                    <p className={getActiveClass("/products")}>Browse</p>
                 </div>
                 <Searchbar />
                 <Link to={cartRoute} id="cart-icon" className={getActiveClass(`/cart/${user?.userId}`)}>
@@ -51,14 +51,14 @@ const Navbar: React.FC = () => {
                     <div className="nav-bar-logged-in-container">
                         <div className="nav-bar-account-container">
                             <div className="nav-bar-button">
-                                <Link to={`/profile/${user?.userId}`}>Account</Link>
+                                <Link to={`/account/profile/${user?.userId}`}>Account</Link>
                             </div>
                             <div className="nav-bar-account-dropdown">
                                 <div className="nav-bar-dropdown-button">
-                                    <Link to={`/profile/${user?.userId}`}>Profile</Link>
+                                    <Link to={`/account/profile/${user?.userId}`}>Profile</Link>
                                 </div>
                                 <div className="nav-bar-dropdown-button">
-                                    <Link to={`/orders/${user?.userId}`}>Orders</Link>
+                                    <Link to={`/account/orders/${user?.userId}`}>Orders</Link>
                                 </div>
                                 <div className="nav-bar-dropdown-button">
                                     <p onClick={handleLogout}>Logout</p>
