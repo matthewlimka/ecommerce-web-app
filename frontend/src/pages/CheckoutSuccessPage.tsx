@@ -57,7 +57,7 @@ const CheckoutSuccessPage: React.FC = () => {
                 </div>
                 <h2 className="checkout-success-page-message">Thank you for your purchase!<br/>Your order has been placed successfully.</h2>
                 <div className="checkout-success-page-actions">
-                    <button onClick={() => navigate(`/orders/${user?.userId}`)}>View Order</button>
+                    <button onClick={() => navigate(`/account/orders/${user?.userId}`)}>View Order</button>
                     <button onClick={() => navigate('/home')}>Continue Shopping</button>
                 </div>
             </div>
