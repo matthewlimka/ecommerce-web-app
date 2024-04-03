@@ -38,19 +38,19 @@ Technologies involved:
    - Implement JWT for authentication and OAuth2 for authorization
    - Update backend tests to work with Spring Security
 
-4. **Basic Frontend UI Development** (in progress)
+4. **Basic Frontend UI Development** (done)
    - Create login/registration pages for users
    - Develop home, products, orders & order history, payment pages
    - Design a shopping cart UI
 
-5. **Dockerization**
+5. **Dockerization** (in progress)
    - Create Dockerfiles for backend and frontend
    - Develop a 'docker-compose.yaml' file for managing the containers
 
-6. **GitHub Actions for CI**
+6. **GitHub Actions for CI** (in progress)
    - Set up GitHub actions for backend tests
 
-7. **Refining Frontend UI**
+7. **Refining Frontend UI** (done)
    - Incorporate a colour scheme into the UI
    - Tidy up website layout and enhance UI/UX
 
