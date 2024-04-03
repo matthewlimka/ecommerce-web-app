@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,6 +46,7 @@ import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.OrderItem;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.services.OrderService;
+import com.matthewlim.ecommercewebapp.services.UserService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(OrderController.class)
@@ -57,6 +60,15 @@ public class OrderControllerUnitTest {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@MockBean
+	private JwtDecoder jwtDecoder;
+	
+	@MockBean
+	private PasswordEncoder passwordEncoder;
+	
+	@MockBean
+	private UserService userService;
 	
 	@MockBean
 	private OrderService orderService;

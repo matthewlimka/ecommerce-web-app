@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,7 +56,13 @@ public class UserControllerUnitTest {
 	private ObjectMapper objectMapper;
 	
 	@MockBean
-	private UserService userService;
+	private JwtDecoder jwtDecoder;
+	
+	@MockBean
+	private PasswordEncoder passwordEncoder;
+	
+	@MockBean
+	private UserService userService;	
 	
 	private User testUser;
 	
@@ -67,6 +75,7 @@ public class UserControllerUnitTest {
 		
 		testUser = new User();
 		testUser.setUserId(1L);
+		testUser.setUsername("user");
 	}
 	
 	@Test
@@ -86,22 +95,22 @@ public class UserControllerUnitTest {
 	@Test
 	@WithMockUser
 	public void testGetUser() throws Exception {
-		Long userId = testUser.getUserId();
-		when(userService.findByUserId(userId)).thenReturn(testUser);
+		String username = testUser.getUsername();
+		String jwtToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidXNlciIsImV4cCI6MTcxMjE0MTE2MSwiaWF0IjoxNzEyMTM3NTYxLCJzY29wZSI6IlVTRVIifQ.EeDl1zXuo01GMpfLgB3JXOT0SruoiVlTm8cLqL6obnoqMBLEMJp2FenpPvGWoHhUTOx_AvIdWam8bzGe26aUlBlsbUd67jFL6I1QPH90isOHivzhRPVm6pqFjI4urUkIYVfG0PrE7-UEvsbzIAPrWFF91OslRrTvg78yWrBjrxaagVyoT9L6qIDjGxgwaEZqxSBU2xkqpiYOgq17eKluiy2WZY9l3ewXk6FJLQSjsPClSPc0EDg7n1f8nfRIPtrf54vfiHYKSBmkVwdc7N6pjwIt5ulfH8s4GEi77wtYWDDZspY-EhH07tlYfU2CichSBc3OIyrUecF2nEkjVHs9rQ";
+		when(userService.findByUsername(username)).thenReturn(testUser);
 		
-		mockMvc.perform(get("/api/v1/users/{userId}", userId))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.userId", is(userId.intValue())))
-			.andExpect(jsonPath("$").isNotEmpty());
+	    mockMvc.perform(get("/api/v1/user")
+	    	.header("Authorization", "Bearer " + jwtToken))
+	    	.andDo(print())
+	    	.andExpect(status().isOk())
+	    	.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+	    	.andExpect(jsonPath("$.username", is(username)))
+	    	.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
 	@Test
 	@WithMockUser
 	public void testCreateUser() throws Exception {
-		User user = new User("bobRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER);
-		user.setUserId(1L);
 		when(userService.addUser(testUser)).thenReturn(testUser);
 		
 		mockMvc.perform(post("/api/v1/users")
@@ -111,7 +120,7 @@ public class UserControllerUnitTest {
 			.andDo(print())
 			.andExpect(status().isCreated())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.userId", is(user.getUserId().intValue())))
+			.andExpect(jsonPath("$.userId", is(testUser.getUserId().intValue())))
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
@@ -122,7 +131,7 @@ public class UserControllerUnitTest {
         User updatedUser = new User("johnwick", "yeahhh", "johnwick@gmail.com", "John", "Wick", Role.USER);
         when(userService.updateUser(userId, testUser)).thenReturn(updatedUser);
         
-        mockMvc.perform(put("/api/v1/users/{userId}", userId)
+        mockMvc.perform(put("/api/v1/user/{userId}", userId)
         	.with(csrf())
         	.contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updatedUser)))
@@ -137,7 +146,7 @@ public class UserControllerUnitTest {
         fieldsToUpdate.put("username", "keanureeves");
         fieldsToUpdate.put("email", "keanureeves@gmail.com");
 
-        mockMvc.perform(patch("/api/v1/users/{userId}", userId)
+        mockMvc.perform(patch("/api/v1/user/{userId}", userId)
         	.with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(fieldsToUpdate)))
@@ -149,7 +158,7 @@ public class UserControllerUnitTest {
 	public void testDeleteUser() throws Exception {
 		Long userId = testUser.getUserId();
 		
-		mockMvc.perform(delete("/api/v1/users/{userId}", userId)
+		mockMvc.perform(delete("/api/v1/user/{userId}", userId)
 			.with(csrf()))
 			.andExpect(status().isOk());
 	}

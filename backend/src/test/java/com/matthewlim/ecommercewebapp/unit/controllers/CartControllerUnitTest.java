@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,7 +42,9 @@ import com.matthewlim.ecommercewebapp.controllers.CartController;
 import com.matthewlim.ecommercewebapp.models.Cart;
 import com.matthewlim.ecommercewebapp.models.CartItem;
 import com.matthewlim.ecommercewebapp.models.User;
+import com.matthewlim.ecommercewebapp.services.CartItemService;
 import com.matthewlim.ecommercewebapp.services.CartService;
+import com.matthewlim.ecommercewebapp.services.UserService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CartController.class)
@@ -56,9 +60,23 @@ public class CartControllerUnitTest {
 	private ObjectMapper objectMapper;
 	
 	@MockBean
+	private JwtDecoder jwtDecoder;
+	
+	@MockBean
+	private PasswordEncoder passwordEncoder;
+
+	@MockBean
+	private UserService userService;
+	
+	@MockBean
 	private CartService cartService;
 	
+	@MockBean
+	private CartItemService cartItemService;
+	
 	private Cart testCart;
+	
+	private User testUser;
 	
 	@BeforeEach
 	public void setup() {
@@ -69,6 +87,9 @@ public class CartControllerUnitTest {
 		
 		testCart = new Cart();
 		testCart.setCartId(1L);
+		testUser = new User();
+		testUser.setUserId(1L);
+		testUser.setUsername("user");
 	}
 	
 	@Test
@@ -88,10 +109,13 @@ public class CartControllerUnitTest {
 	@Test
 	@WithMockUser
 	public void testGetCart() throws Exception {
+		String username = testUser.getUsername();
 		Long cartId = testCart.getCartId();
-		when(cartService.findByCartId(cartId)).thenReturn(testCart);
+		String jwtToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidXNlciIsImV4cCI6MTcxMjE0MTE2MSwiaWF0IjoxNzEyMTM3NTYxLCJzY29wZSI6IlVTRVIifQ.EeDl1zXuo01GMpfLgB3JXOT0SruoiVlTm8cLqL6obnoqMBLEMJp2FenpPvGWoHhUTOx_AvIdWam8bzGe26aUlBlsbUd67jFL6I1QPH90isOHivzhRPVm6pqFjI4urUkIYVfG0PrE7-UEvsbzIAPrWFF91OslRrTvg78yWrBjrxaagVyoT9L6qIDjGxgwaEZqxSBU2xkqpiYOgq17eKluiy2WZY9l3ewXk6FJLQSjsPClSPc0EDg7n1f8nfRIPtrf54vfiHYKSBmkVwdc7N6pjwIt5ulfH8s4GEi77wtYWDDZspY-EhH07tlYfU2CichSBc3OIyrUecF2nEkjVHs9rQ";
+		when(cartService.findByUser(userService.findByUsername(username))).thenReturn(testCart);
 		
-		mockMvc.perform(get("/api/v1/carts/{cartId}", cartId))
+		mockMvc.perform(get("/api/v1/cart")
+			.header("Authorization", "Bearer " + jwtToken))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -102,8 +126,6 @@ public class CartControllerUnitTest {
 	@Test
 	@WithMockUser
 	public void testCreateCart() throws Exception {
-		Cart cart = new Cart(new User(), new ArrayList<CartItem>());
-		cart.setCartId(1L);
 		when(cartService.addCart(testCart)).thenReturn(testCart);
 		
 		mockMvc.perform(post("/api/v1/carts")
@@ -113,7 +135,7 @@ public class CartControllerUnitTest {
 			.andDo(print())
 			.andExpect(status().isCreated())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			.andExpect(jsonPath("$.cartId", is(cart.getCartId().intValue())))
+			.andExpect(jsonPath("$.cartId", is(testCart.getCartId().intValue())))
 			.andExpect(jsonPath("$").isNotEmpty());
 	}
 	
@@ -124,7 +146,7 @@ public class CartControllerUnitTest {
         Cart updatedCart = new Cart(new User(), new ArrayList<CartItem>(Arrays.asList(new CartItem(), new CartItem())));
         when(cartService.updateCart(cartId, testCart)).thenReturn(updatedCart);
         
-        mockMvc.perform(put("/api/v1/carts/{cartId}", cartId)
+        mockMvc.perform(put("/api/v1/cart/{cartId}", cartId)
         	.with(csrf())
         	.contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updatedCart)))
@@ -138,7 +160,7 @@ public class CartControllerUnitTest {
         Map<String, Object> fieldsToUpdate = new HashMap<>();
         fieldsToUpdate.put("user", new User());
 
-        mockMvc.perform(patch("/api/v1/carts/{cartId}", cartId)
+        mockMvc.perform(patch("/api/v1/cart/{cartId}", cartId)
         	.with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(fieldsToUpdate)))
@@ -150,7 +172,7 @@ public class CartControllerUnitTest {
 	public void testDeleteCart() throws Exception {
 		Long cartId = testCart.getCartId();
 		
-		mockMvc.perform(delete("/api/v1/carts/{cartId}", cartId)
+		mockMvc.perform(delete("/api/v1/cart/{cartId}", cartId)
 			.with(csrf()))
 			.andExpect(status().isOk());
 	}
