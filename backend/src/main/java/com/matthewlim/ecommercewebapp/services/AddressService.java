@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -105,7 +106,8 @@ public class AddressService {
 					return new AddressNotFoundException("No address with address ID " + addressId + " found");
 				});
 
-		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
+		String username = authentication != null ? authentication.getName() : null;
 		User user = userRepo.findByUsername(username)
 				.orElseThrow(() -> {
 					logger.error("No user with username " + username + " found");
