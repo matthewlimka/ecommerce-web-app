@@ -65,6 +65,7 @@ public class CartControllerIntegrationTest {
         
         User user = new User();
         user = userRepo.save(user);
+
         testCart = new Cart(user, null);
         testCart = cartRepo.save(testCart);
     }
@@ -80,8 +81,18 @@ public class CartControllerIntegrationTest {
     @Test
     @WithMockUser
     public void testGetCartEndpoint() throws Exception {
-        Long cartId = testCart.getCartId();
-        mockMvc.perform(get("/api/v1/carts/{cartId}", cartId))
+    	User user = new User();
+    	user.setUsername("cartControllerTestUser");
+    	user.setPassword("password");
+    	userRepo.save(user);
+    	Cart cart = new Cart(user, null);
+    	cart = cartRepo.save(cart);
+    	
+        Long cartId = cart.getCartId();
+        String jwtToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiY2FydENvbnRyb2xsZXJUZXN0VXNlciIsImV4cCI6MTcxMjU3Mzk4NiwiaWF0IjoxNzEyNTcwMzg2LCJzY29wZSI6IlVTRVIifQ.bKhYKw9kxkQjGCRDg5qyazMpci-tj8EeGEk5FKzJCFfqOH5cPocuP_ZsDpZyNAU1gsaN-sBzu5ld9mk8_VvMHDQ7dRFgIcdMgRbunLrD_pW9zeVy_88KpmWBtAnQHDUY-tl5C36SPOwIsTfeUIKwFe0rOyLFs6r0l6XPm16MuWockz2H3DkaLJWayZQnDXT7wmtyHa10ror_CA9X3NQO5RvQhVzdg7hCQOBYZKAHscOyC0yAmetWKslmaTf3OxMO-nqPr719lVxnHTaNZMcOKluJGHDidBLbaOpPZh3DLmsfDK7p9WZQlk8cJi-2x5IuLXLi4Rn0xRvy05guW9F5hg";
+        
+        mockMvc.perform(get("/api/v1/cart")
+        	.header("Authorization", "Bearer " + jwtToken))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.cartId", is(cartId.intValue())));
     }
@@ -101,11 +112,11 @@ public class CartControllerIntegrationTest {
     @WithMockUser
     public void testUpdateCartEndpoint() throws Exception {
         Long cartId = testCart.getCartId();
-        Cart updatedCart = new Cart(testCart.getUser(), new ArrayList<CartItem>());
+        testCart.setCartItems(new ArrayList<CartItem>());
 
-        mockMvc.perform(put("/api/v1/carts/{cartId}", cartId)
+        mockMvc.perform(put("/api/v1/cart/{cartId}", cartId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedCart)))
+                .content(objectMapper.writeValueAsString(testCart)))
                 .andExpect(status().isOk());
     }
     
@@ -116,7 +127,7 @@ public class CartControllerIntegrationTest {
         Map<String, Object> fieldsToUpdate = new HashMap<>();
         fieldsToUpdate.put("cartItems", new ArrayList<CartItem>());
         
-        mockMvc.perform(patch("/api/v1/carts/{cartId}", cartId)
+        mockMvc.perform(patch("/api/v1/cart/{cartId}", cartId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fieldsToUpdate)))
                 .andExpect(status().isOk());
@@ -126,7 +137,7 @@ public class CartControllerIntegrationTest {
     @WithMockUser
     public void testDeleteCartEndpoint() throws Exception {
     	Long cartId = testCart.getCartId();
-    	mockMvc.perform(delete("/api/v1/carts/{cartId}", cartId))
+    	mockMvc.perform(delete("/api/v1/cart/{cartId}", cartId))
     		.andExpect(status().isOk());
     }
     
