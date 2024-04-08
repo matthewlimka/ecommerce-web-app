@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -34,8 +35,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matthewlim.ecommercewebapp.enums.OrderStatus;
 import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.OrderItem;
+import com.matthewlim.ecommercewebapp.models.Payment;
+import com.matthewlim.ecommercewebapp.models.Product;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.OrderRepository;
+import com.matthewlim.ecommercewebapp.repositories.ProductRepository;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 
 @SpringBootTest
@@ -57,7 +61,16 @@ public class OrderControllerIntegrationTest {
 	@Autowired
 	private OrderRepository orderRepo;
 	
+	@Autowired
+	private ProductRepository productRepo;
+	
 	private Order testOrder;
+	
+	private OrderItem testOrderItem;
+	
+	private Product testProduct;
+	
+	private Payment testPayment;
 	
     @BeforeEach
     public void setup() {
@@ -68,7 +81,20 @@ public class OrderControllerIntegrationTest {
         
         User user = new User();
         user = userRepo.save(user);
-        testOrder = new Order(LocalDateTime.now(), BigDecimal.valueOf(26.67), OrderStatus.PENDING, user, null);
+        testProduct = new Product("Test product", BigDecimal.valueOf(26.67), 30);
+        productRepo.save(testProduct);
+        
+        testOrderItem = new OrderItem();
+        testOrderItem.setQuantity(1);
+        testOrderItem.setSubtotal(BigDecimal.valueOf(26.67));
+        testOrderItem.setProduct(testProduct);
+        
+        testPayment = new Payment();
+        
+        testOrder = new Order(LocalDateTime.now(), BigDecimal.valueOf(26.67), OrderStatus.PENDING, user, List.of(testOrderItem));
+        testOrderItem.setOrder(testOrder);
+        testOrder.setPayment(new Payment());
+        testPayment.setOrder(testOrder);
         testOrder = orderRepo.save(testOrder);
     }
     
@@ -93,6 +119,7 @@ public class OrderControllerIntegrationTest {
     @WithMockUser
     public void testCreateOrderEndpoint() throws Exception {
         Order order = new Order();
+        order.setOrderItems(new ArrayList<OrderItem>());
 
         mockMvc.perform(post("/api/v1/orders")
             .contentType(MediaType.APPLICATION_JSON)
@@ -105,6 +132,11 @@ public class OrderControllerIntegrationTest {
     public void testUpdateOrderEndpoint() throws Exception {
         Long orderId = testOrder.getOrderId();
         Order updatedOrder = new Order();
+        updatedOrder.setOrderStatus(OrderStatus.PROCESSING);
+        updatedOrder.setOrderItems(List.of(testOrderItem));
+        Payment updatedOrderPayment = new Payment();
+        updatedOrderPayment.setPaymentDate(LocalDateTime.now());
+        updatedOrder.setPayment(updatedOrderPayment);
 
         mockMvc.perform(put("/api/v1/orders/{orderId}", orderId)
                 .contentType(MediaType.APPLICATION_JSON)
