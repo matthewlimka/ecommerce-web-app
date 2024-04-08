@@ -72,8 +72,15 @@ public class UserControllerIntegrationTest {
     @Test
     @WithMockUser
     public void testGetUserEndpoint() throws Exception {
-        Long userId = testUser.getUserId();
-        mockMvc.perform(get("/api/v1/users/{userId}", userId))
+    	User user = new User();
+    	user.setUsername("userControllerTestUser");
+    	user.setPassword("password");
+    	user = userRepo.save(user);
+        Long userId = user.getUserId();
+        String jwtToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidXNlckNvbnRyb2xsZXJUZXN0VXNlciIsImV4cCI6MTcxMjU3MzkzMCwiaWF0IjoxNzEyNTcwMzMwLCJzY29wZSI6IlVTRVIifQ.mbbg4LuUXOiT1O6In_9Nr4v6n10s7GiPHymKvPZIKRO36sdman-TszHX9tU1ZDI8aqxebDCvTTeuM8I3NPQlHXQp7jKt1u_Aq0OFatnU68FPLVbwAHlIt0MgPLrIhsM7kH0GDEuKX0y9Etyjws-TsK1K96EB0ilGjwZbvhklhsDqZSN8oc1bUsx8OVXbiOka7LDd8PvYdYydYy85xvVqhX26aIA3FAGAEZKBwKy27cHjuRVDjSmQ_5MMDiUcHWlCGfbZsp0P6XEUt__T-4kbF_zQJxu-vsV3XUiFxfExyo-SazCe6Q9zfgLF6nIV8_rC4PFD7Fg-2Fn6sOqzV83hoA";
+        
+        mockMvc.perform(get("/api/v1/user")
+        	.header("Authorization", "Bearer " + jwtToken))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.userId", is(userId.intValue())));
     }
@@ -95,7 +102,7 @@ public class UserControllerIntegrationTest {
         Long userId = testUser.getUserId();
         User updatedUser = new User("bobbyRoss", "ilovepainting", "bobRoss@gmail.com", "Bob", "Ross", Role.USER);
 
-        mockMvc.perform(put("/api/v1/users/{userId}", userId)
+        mockMvc.perform(put("/api/v1/user/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedUser)))
                 .andExpect(status().isOk());
@@ -112,7 +119,7 @@ public class UserControllerIntegrationTest {
         fieldsToUpdate.put("firstName", "Bill");
         fieldsToUpdate.put("lastName", "Nye");
         
-        mockMvc.perform(patch("/api/v1/users/{userId}", userId)
+        mockMvc.perform(patch("/api/v1/user/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fieldsToUpdate)))
                 .andExpect(status().isOk());
@@ -122,7 +129,7 @@ public class UserControllerIntegrationTest {
     @WithMockUser
     public void testDeleteUserEndpoint() throws Exception {
     	Long userId = testUser.getUserId();
-    	mockMvc.perform(delete("/api/v1/users/{userId}", userId))
+    	mockMvc.perform(delete("/api/v1/user/{userId}", userId))
     		.andExpect(status().isOk());
     }
     
