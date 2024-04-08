@@ -148,6 +148,7 @@ public class OrderServiceUnitTest {
 	@Test
 	public void testAddOrder() {
 		Order order = new Order();
+		order.setOrderItems(new ArrayList<OrderItem>());
 		
 		when(orderRepository.save(order)).thenReturn(order);
 		Order result = orderService.addOrder(order);
@@ -165,6 +166,10 @@ public class OrderServiceUnitTest {
 		Order updatedOrder = new Order();
 		updatedOrder.setUser(new User());
 		updatedOrder.setOrderStatus(OrderStatus.SHIPPED);
+		updatedOrder.setOrderItems(List.of(new OrderItem()));
+		Payment updatedOrderPayment = new Payment();
+		updatedOrderPayment.setPaymentDate(LocalDateTime.now());
+		updatedOrder.setPayment(updatedOrderPayment);
 		
 		when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
 		when(orderRepository.save(existingOrder)).thenReturn(updatedOrder);
