@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
 		PasswordEncoder passwordEncoder = applicationContext.getBean(PasswordEncoder.class);
 		User userToSave = new User(user.getUsername(), passwordEncoder.encode(user.getPassword()), user.getEmail(), user.getFirstName(), user.getLastName(), Role.USER);
 		userToSave.getCart().setUser(userToSave);
-		userToSave.getShippingAddress().setUser(userToSave);;
+		userToSave.getShippingAddress().setUser(userToSave);
 		User savedUser = userRepo.save(userToSave);
 		logger.info("Successfully registered new user with user ID " + savedUser.getUserId());
 		return savedUser;
