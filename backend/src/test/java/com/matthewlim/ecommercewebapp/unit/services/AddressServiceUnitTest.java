@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.matthewlim.ecommercewebapp.models.Address;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.AddressRepository;
+import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 import com.matthewlim.ecommercewebapp.services.AddressService;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +31,9 @@ public class AddressServiceUnitTest {
 
 	@Mock
 	private AddressRepository addressRepository;
+	
+	@Mock
+	private UserRepository userRepository;
 	
 	@InjectMocks
 	private AddressService addressService;
@@ -157,11 +161,13 @@ public class AddressServiceUnitTest {
 		Long addressId = 1L;
 		Address existingAddress = new Address();
 		existingAddress.setAddressId(addressId);
+		User user = new User();
 		
 		Address updatedAddress = new Address();
 		updatedAddress.setStreetAddress("updatedStreetAddress");
 		
 		when(addressRepository.findById(addressId)).thenReturn(Optional.of(existingAddress));
+		when(userRepository.findByUsername(null)).thenReturn(Optional.of(user));
 		when(addressRepository.save(existingAddress)).thenReturn(updatedAddress);
 		Address result = addressService.updateAddress(addressId, updatedAddress);
 		
