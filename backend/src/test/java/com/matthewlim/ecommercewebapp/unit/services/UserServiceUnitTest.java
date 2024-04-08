@@ -3,6 +3,7 @@ package com.matthewlim.ecommercewebapp.unit.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,7 +20,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.matthewlim.ecommercewebapp.enums.Role;
 import com.matthewlim.ecommercewebapp.models.Address;
 import com.matthewlim.ecommercewebapp.models.Order;
 import com.matthewlim.ecommercewebapp.models.User;
@@ -31,6 +35,12 @@ public class UserServiceUnitTest {
 
 	@Mock
 	private UserRepository userRepository;
+	
+	@Mock
+	private ApplicationContext applicationContext;
+	
+	@Mock
+	private PasswordEncoder passwordEncoder;
 	
 	@InjectMocks
 	private UserService userService;
@@ -114,13 +124,18 @@ public class UserServiceUnitTest {
 	
 	@Test
 	public void testAddUser() {
-		User user = new User();
+		String originalPassword = "password";
+		String encodedPassword = "$2a$10$mockEncodedPassword";
+		User user = new User("user", originalPassword, "user@email.com", "user", "test", Role.USER);
 		
-		when(userRepository.save(user)).thenReturn(user);
+		when(applicationContext.getBean(PasswordEncoder.class)).thenReturn(passwordEncoder);
+		when(passwordEncoder.encode(originalPassword)).thenReturn(encodedPassword);
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		User result = userService.addUser(user);
 		
 		assertNotNull(result);
-		verify(userRepository, times(1)).save(user);
+		verify(userRepository, times(1)).save(any(User.class));
+		assertEquals(encodedPassword, result.getPassword());
 	}
 	
 	@Test
