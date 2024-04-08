@@ -69,7 +69,7 @@ public class CartItemControllerIntegrationTest {
         
         Cart cart = new Cart();
         cart = cartRepo.save(cart);
-        Product product = new Product();
+        Product product = new Product("Test product", BigDecimal.valueOf(6.45), 50);
         product = productRepo.save(product);
         testCartItem = new CartItem(2, BigDecimal.valueOf(12.90), cart, product);
         testCartItem = cartItemRepo.save(testCartItem);
