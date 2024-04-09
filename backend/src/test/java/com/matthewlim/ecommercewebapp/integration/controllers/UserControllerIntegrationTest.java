@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -36,6 +37,7 @@ import com.matthewlim.ecommercewebapp.services.TokenService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class UserControllerIntegrationTest {
 
 	@Autowired
@@ -79,6 +81,7 @@ public class UserControllerIntegrationTest {
     	user.setPassword("password");
     	user = userRepo.save(user);
     	
+    	// Placing JWT in request header as controller method's logic checks for the authenticated user
         Long userId = user.getUserId();
         TokenService tokenService = context.getBean(TokenService.class);
         String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
