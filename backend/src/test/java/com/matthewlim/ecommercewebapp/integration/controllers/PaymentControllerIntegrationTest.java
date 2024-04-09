@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -38,6 +39,7 @@ import com.matthewlim.ecommercewebapp.repositories.PaymentRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class PaymentControllerIntegrationTest {
 
 	@Autowired
@@ -66,7 +68,7 @@ public class PaymentControllerIntegrationTest {
         
         Order order = new Order();
         order = orderRepo.save(order);
-        testPayment = new Payment(LocalDateTime.now(), "123456", BigDecimal.valueOf(990.87), PaymentMethod.CREDIT_CARD_MASTERCARD, order);
+        testPayment = new Payment(LocalDateTime.now(), "SG-" + LocalDateTime.now().toString(), BigDecimal.valueOf(990.87), PaymentMethod.CREDIT_CARD_MASTERCARD, order);
         testPayment = paymentRepo.save(testPayment);
     }
     
