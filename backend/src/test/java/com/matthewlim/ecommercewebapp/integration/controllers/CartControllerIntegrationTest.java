@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,6 +35,7 @@ import com.matthewlim.ecommercewebapp.models.CartItem;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.CartRepository;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
+import com.matthewlim.ecommercewebapp.services.TokenService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -84,12 +86,14 @@ public class CartControllerIntegrationTest {
     	User user = new User();
     	user.setUsername("cartControllerTestUser");
     	user.setPassword("password");
-    	userRepo.save(user);
+    	user = userRepo.save(user);
+    	
     	Cart cart = new Cart(user, null);
     	cart = cartRepo.save(cart);
     	
         Long cartId = cart.getCartId();
-        String jwtToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiY2FydENvbnRyb2xsZXJUZXN0VXNlciIsImV4cCI6MTcxMjU3Mzk4NiwiaWF0IjoxNzEyNTcwMzg2LCJzY29wZSI6IlVTRVIifQ.bKhYKw9kxkQjGCRDg5qyazMpci-tj8EeGEk5FKzJCFfqOH5cPocuP_ZsDpZyNAU1gsaN-sBzu5ld9mk8_VvMHDQ7dRFgIcdMgRbunLrD_pW9zeVy_88KpmWBtAnQHDUY-tl5C36SPOwIsTfeUIKwFe0rOyLFs6r0l6XPm16MuWockz2H3DkaLJWayZQnDXT7wmtyHa10ror_CA9X3NQO5RvQhVzdg7hCQOBYZKAHscOyC0yAmetWKslmaTf3OxMO-nqPr719lVxnHTaNZMcOKluJGHDidBLbaOpPZh3DLmsfDK7p9WZQlk8cJi-2x5IuLXLi4Rn0xRvy05guW9F5hg";
+        TokenService tokenService = context.getBean(TokenService.class);
+        String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         
         mockMvc.perform(get("/api/v1/cart")
         	.header("Authorization", "Bearer " + jwtToken))
