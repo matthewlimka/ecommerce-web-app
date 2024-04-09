@@ -23,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -35,6 +36,7 @@ import com.matthewlim.ecommercewebapp.repositories.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class AddressControllerIntegrationTest {
 
 	@Autowired
@@ -96,11 +98,15 @@ public class AddressControllerIntegrationTest {
     }
     
     @Test
-    @WithMockUser
+    @WithMockUser(username = "testUpdateAddressEndpointTestUser")
     public void testUpdateAddressEndpoint() throws Exception {
-        Long addressId = testAddress.getAddressId();
-        Address updatedAddress = new Address("Oak Street", "San Francisco", "California", "111111", "USA", new User());
-
+    	User user = testAddress.getUser();
+    	user.setUsername("testUpdateAddressEndpointTestUser");
+    	user = userRepo.save(user);
+    	
+    	Long addressId = testAddress.getAddressId();
+        Address updatedAddress = new Address("Oak Street", "San Francisco", "California", "111111", "USA", user);
+        
         mockMvc.perform(put("/api/v1/addresses/{addressId}", addressId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedAddress)))
