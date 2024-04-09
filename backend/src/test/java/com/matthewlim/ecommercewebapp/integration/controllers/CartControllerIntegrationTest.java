@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -39,6 +40,7 @@ import com.matthewlim.ecommercewebapp.services.TokenService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class CartControllerIntegrationTest {
 
 	@Autowired
@@ -84,13 +86,14 @@ public class CartControllerIntegrationTest {
     @WithMockUser
     public void testGetCartEndpoint() throws Exception {
     	User user = new User();
-    	user.setUsername("cartControllerTestUser");
+    	user.setUsername("testGetCartEndpointTestUser");
     	user.setPassword("password");
     	user = userRepo.save(user);
     	
     	Cart cart = new Cart(user, null);
     	cart = cartRepo.save(cart);
     	
+    	// Placing JWT in request header as controller method's logic checks for the authenticated user
         Long cartId = cart.getCartId();
         TokenService tokenService = context.getBean(TokenService.class);
         String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
