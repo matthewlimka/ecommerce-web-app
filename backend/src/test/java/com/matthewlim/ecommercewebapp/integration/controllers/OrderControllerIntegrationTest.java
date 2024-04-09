@@ -26,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -41,9 +43,11 @@ import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.OrderRepository;
 import com.matthewlim.ecommercewebapp.repositories.ProductRepository;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
+import com.matthewlim.ecommercewebapp.services.TokenService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class OrderControllerIntegrationTest {
 
 	@Autowired
@@ -101,7 +105,17 @@ public class OrderControllerIntegrationTest {
 	@Test
 	@WithMockUser
 	public void testGetOrdersEndpoint() throws Exception {
-		mockMvc.perform(get("/api/v1/orders"))
+	    User user = testOrder.getUser();
+	    user.setUsername("testGetOrdersEndpointTestUser");
+	    user.setPassword("password");
+	    user = userRepo.save(user);
+		
+	    // Placing JWT in request header as controller method's logic checks for the authenticated user
+		TokenService tokenService = context.getBean(TokenService.class);
+		String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+
+		mockMvc.perform(get("/api/v1/orders")
+			.header("Authorization", "Bearer " + jwtToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));
 	}
@@ -120,8 +134,18 @@ public class OrderControllerIntegrationTest {
     public void testCreateOrderEndpoint() throws Exception {
         Order order = new Order();
         order.setOrderItems(new ArrayList<OrderItem>());
+        
+        User user = new User();
+        user.setUsername("testCreateOrderEndpointTestUser");
+        user.setPassword("password");
+        user = userRepo.save(user);
+        
+        // Placing JWT in request header as controller method's logic checks for the authenticated user
+        TokenService tokenService = context.getBean(TokenService.class);
+        String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         mockMvc.perform(post("/api/v1/orders")
+        	.header("Authorization", "Bearer " + jwtToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(order)))
             .andExpect(status().isCreated());
@@ -136,12 +160,26 @@ public class OrderControllerIntegrationTest {
         updatedOrder.setOrderItems(List.of(testOrderItem));
         Payment updatedOrderPayment = new Payment();
         updatedOrderPayment.setPaymentDate(LocalDateTime.now());
+        updatedOrderPayment.setOrder(updatedOrder);
         updatedOrder.setPayment(updatedOrderPayment);
+        
+        User user = testOrder.getUser();
+        user.setUsername("testUpdateOrderEndpointTestUser");
+        user.setPassword("password");
+        user = userRepo.save(user);
+
+        // Placing JWT in request header as controller method's logic checks for the authenticated user
+		TokenService tokenService = context.getBean(TokenService.class);
+		String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         mockMvc.perform(put("/api/v1/orders/{orderId}", orderId)
+        		.header("Authorization", "Bearer " + jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedOrder)))
                 .andExpect(status().isOk());
+
+        // Re-fetch testOrder in order to retrieve updated payment object in payment field, otherwise the payment field will still be null
+        testOrder = orderRepo.findById(orderId).get();
     }
     
     @Test
