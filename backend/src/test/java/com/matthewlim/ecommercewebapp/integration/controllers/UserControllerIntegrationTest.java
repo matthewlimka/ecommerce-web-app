@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matthewlim.ecommercewebapp.enums.Role;
 import com.matthewlim.ecommercewebapp.models.User;
 import com.matthewlim.ecommercewebapp.repositories.UserRepository;
+import com.matthewlim.ecommercewebapp.services.TokenService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -76,8 +78,10 @@ public class UserControllerIntegrationTest {
     	user.setUsername("userControllerTestUser");
     	user.setPassword("password");
     	user = userRepo.save(user);
+    	
         Long userId = user.getUserId();
-        String jwtToken = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidXNlckNvbnRyb2xsZXJUZXN0VXNlciIsImV4cCI6MTcxMjU3MzkzMCwiaWF0IjoxNzEyNTcwMzMwLCJzY29wZSI6IlVTRVIifQ.mbbg4LuUXOiT1O6In_9Nr4v6n10s7GiPHymKvPZIKRO36sdman-TszHX9tU1ZDI8aqxebDCvTTeuM8I3NPQlHXQp7jKt1u_Aq0OFatnU68FPLVbwAHlIt0MgPLrIhsM7kH0GDEuKX0y9Etyjws-TsK1K96EB0ilGjwZbvhklhsDqZSN8oc1bUsx8OVXbiOka7LDd8PvYdYydYy85xvVqhX26aIA3FAGAEZKBwKy27cHjuRVDjSmQ_5MMDiUcHWlCGfbZsp0P6XEUt__T-4kbF_zQJxu-vsV3XUiFxfExyo-SazCe6Q9zfgLF6nIV8_rC4PFD7Fg-2Fn6sOqzV83hoA";
+        TokenService tokenService = context.getBean(TokenService.class);
+        String jwtToken = tokenService.generateToken(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         
         mockMvc.perform(get("/api/v1/user")
         	.header("Authorization", "Bearer " + jwtToken))
