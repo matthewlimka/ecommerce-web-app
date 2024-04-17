@@ -15,6 +15,5 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-alpine AS runtime
 WORKDIR /app
 COPY --from=build /build/target/ecommerce-web-app-0.0.1-SNAPSHOT.jar /app/app.jar
-COPY --from=build /build/src/main/resources/certs /app/src/main/resources/certs
 EXPOSE 9001
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
